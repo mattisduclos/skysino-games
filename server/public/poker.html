@@ -440,7 +440,24 @@
 
         updateDisplay();
 
-        if (gameState.phase === 'showdown') {
+        // If we just reached Turn or River, give the human player a window to bet/fold/call
+        if (gameState.phase === 'turn' || gameState.phase === 'river') {
+          // show bet controls and make it the human player's turn first
+          document.getElementById('betControl').style.display = 'block';
+          document.getElementById('actions').classList.remove('waiting');
+          gameState.currentPlayerIdx = 0;
+
+          // clear previous timeout
+          if (gameState.actionTimeout) { clearTimeout(gameState.actionTimeout); gameState.actionTimeout = null; }
+
+          // after 12s, auto-check/call to continue the round
+          gameState.actionTimeout = setTimeout(() => {
+            if (gameState.phase === 'turn' || gameState.phase === 'river') {
+              checkOrCall();
+            }
+          }, 12000);
+
+        } else if (gameState.phase === 'showdown') {
           endHand();
         } else {
           setTimeout(playRound, 1500);
@@ -462,10 +479,38 @@
           });
         }, 150);
 
-        showResult('Tour Terminé!', `${winner.name} remporte ${gameState.pot} ✪`);
+        // Build rich details for the result modal: list each player and their hand
+        const detailsEl = document.createElement('div');
+        detailsEl.style.color = 'var(--muted)';
+        detailsEl.style.textAlign = 'left';
+        detailsEl.style.marginTop = '0.5rem';
+
+        gameState.players.forEach(p => {
+          const line = document.createElement('div');
+          line.style.marginBottom = '0.5rem';
+          const name = document.createElement('strong');
+          name.textContent = p.name + (p === winner ? ' (Gagnant)' : '');
+          line.appendChild(name);
+          const status = document.createElement('span');
+          status.style.marginLeft = '0.5rem';
+          status.style.color = '#cfc7b0';
+          status.textContent = p.folded ? ' — Couché' : '';
+          line.appendChild(status);
+
+          const handSpan = document.createElement('div');
+          handSpan.style.marginTop = '0.25rem';
+          handSpan.innerHTML = p.hand.map(c => `<span style="margin-right:0.5rem">${c.rank}${c.suit}</span>`).join('');
+          line.appendChild(handSpan);
+
+          detailsEl.appendChild(line);
+        });
+
+        showResult('Tour Terminé!', `${winner.name} remporte ${gameState.pot} ✪`, detailsEl.innerHTML);
       }
 
       function checkOrCall() {
+        // clear any pending auto-action
+        if (gameState.actionTimeout) { clearTimeout(gameState.actionTimeout); gameState.actionTimeout = null; }
         const player = gameState.players[0];
         const callAmount = gameState.currentBet - player.bet;
 
@@ -482,6 +527,8 @@
       }
 
       function raise() {
+        // clear any pending auto-action
+        if (gameState.actionTimeout) { clearTimeout(gameState.actionTimeout); gameState.actionTimeout = null; }
         const player = gameState.players[0];
         const betAmount = Number(document.getElementById('betAmount').value) || 0;
 
@@ -511,6 +558,8 @@
       }
 
       function fold() {
+        // clear any pending auto-action
+        if (gameState.actionTimeout) { clearTimeout(gameState.actionTimeout); gameState.actionTimeout = null; }
         gameState.players[0].folded = true;
         const activePlayers = gameState.players.filter(p => !p.folded);
 
@@ -617,7 +666,13 @@
 
       function showResult(title, details) {
         document.getElementById('resultTitle').textContent = title;
-        document.getElementById('resultDetails').textContent = details;
+        const detailsEl = document.getElementById('resultDetails');
+        // if details is HTML string, set as HTML, otherwise as text
+        if (typeof details === 'string' && details.trim().startsWith('<')) {
+          detailsEl.innerHTML = details;
+        } else {
+          detailsEl.textContent = details;
+        }
         document.getElementById('resultModal').classList.add('show');
       }
 
