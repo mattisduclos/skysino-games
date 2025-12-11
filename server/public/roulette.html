@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Roulette Classique — SKYSINO</title>
+    <style>
+      :root {
+        --accent: #d4af37;
+        --accent-2: #c9972b;
+        --bg-a: #021428;
+        --bg-b: #06213a;
+        --muted: #cfc7b0;
+        --container: 1400px;
+      }
+      *{box-sizing:border-box}
+      html,body{height:100%;margin:0}
+      body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--bg-a),var(--bg-b));color:#f6f4ef;-webkit-font-smoothing:antialiased}
+      .wrap{max-width:var(--container);margin:0 auto;padding:1.5rem}
+      header{display:flex;align-items:center;justify-content:space-between;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,0.05);margin-bottom:2rem}
+      .brand a{color:var(--accent);text-decoration:none;font-weight:700;font-size:1.25rem}
+      h1{margin:0;color:#fff;font-size:1.75rem}
+      .btn{padding:0.6rem 1rem;border-radius:8px;border:0;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:all 0.3s}
+      .btn:disabled{opacity:0.5;cursor:not-allowed}
+      .btn-trial{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#081018}
+      .btn-trial:hover:not(:disabled){filter:brightness(1.1)}
+      .btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--muted)}
+      
+      .alert{background:rgba(212,175,55,0.1);border:1px solid var(--accent);color:var(--accent);padding:1rem;border-radius:8px;margin-bottom:2rem}
+      
+      .main-container{display:grid;grid-template-columns:1fr 320px;gap:2rem;margin-bottom:2rem}
+      
+      .table{background:linear-gradient(135deg,#0a3a2a,#0d5a40);border-radius:16px;padding:2rem;border:3px solid var(--accent);box-shadow:0 0 30px rgba(212,175,55,0.2)}
+      
+      /* Wheel Display */
+      .wheel-section{text-align:center;margin-bottom:2rem}
+      .wheel{width:300px;height:300px;border-radius:50%;margin:0 auto;position:relative;border:8px solid var(--accent);box-shadow:0 0 20px rgba(0,0,0,0.5);overflow:visible}
+      .wheel-number{position:absolute;left:50%;top:50%;transform-origin:0 0;pointer-events:none;font-weight:700;font-size:0.9rem;color:#fff}
+      .wheel-number .label{display:inline-block;padding:2px 6px;border-radius:6px;background:rgba(0,0,0,0.35)}
+      .wheel-number .label{transition:transform 0.3s ease, box-shadow 0.2s ease}
+      .wheel-number .label:hover{transform:scale(1.08);box-shadow:0 6px 14px rgba(0,0,0,0.45)}
+      
+      .wheel-pointer{width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-top:30px solid var(--accent);margin:0 auto -15px;position:relative;z-index:10}
+      
+      .result-display{background:rgba(0,0,0,0.3);border:2px solid var(--accent);border-radius:12px;padding:1.5rem;margin:1.5rem 0;text-align:center;display:none}
+      .result-display.show{display:block}
+      .result-number{font-size:3rem;font-weight:bold;color:var(--accent);margin:0.5rem 0}
+      .result-text{color:var(--muted);margin:0.5rem 0}
+      .result-amount{color:#22c55e;font-size:1.2rem;font-weight:bold;margin-top:0.5rem}
+      
+      /* Betting Layout */
+      .betting-section{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.5rem;margin:1.5rem 0}
+      .betting-label{color:var(--muted);font-size:0.95rem;display:block;margin-bottom:0.75rem}
+      input[type="number"]{width:100%;padding:0.75rem;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;margin-bottom:1rem}
+      
+      /* Betting Zones */
+      .betting-zones{display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem;margin:1rem 0}
+      .zone-btn{padding:0.75rem;border-radius:6px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;cursor:pointer;font-weight:600;transition:all 0.2s;font-size:0.85rem}
+      .zone-btn:hover{border-color:var(--accent);background:rgba(212,175,55,0.1)}
+      .zone-btn.selected{background:var(--accent);color:#081018;border-color:var(--accent)}
+      .zone-btn.red{background:rgba(255,0,0,0.15);border-color:rgb(200,0,0)}
+      .zone-btn.red.selected{background:var(--accent)}
+      .zone-btn.black{background:rgba(0,0,0,0.3);border-color:rgba(255,255,255,0.3)}
+      .zone-btn.black.selected{background:var(--accent)}
+      .zone-btn.green{background:rgba(0,200,0,0.15);border-color:rgb(0,150,0)}
+      .zone-btn.green.selected{background:var(--accent)}
+      
+      /* Number Grid */
+      .numbers-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0.5rem;margin:1rem 0}
+      .number-btn{padding:0.75rem;border-radius:6px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;cursor:pointer;font-weight:600;transition:all 0.2s;font-size:0.9rem}
+      .number-btn:hover{border-color:var(--accent);background:rgba(212,175,55,0.1)}
+      .number-btn.selected{background:var(--accent);color:#081018;border-color:var(--accent)}
+      .number-btn.red{background:rgba(255,0,0,0.2);border-color:rgb(200,0,0)}
+      .number-btn.red.selected{background:var(--accent)}
+      .number-btn.black{background:rgba(0,0,0,0.2);border-color:rgba(255,255,255,0.3)}
+      .number-btn.black.selected{background:var(--accent)}
+      .number-btn.zero{background:rgba(0,200,0,0.3);border-color:rgb(0,150,0);grid-column:1/-1;font-weight:bold}
+      .number-btn.zero.selected{background:var(--accent);color:#081018}
+      
+      /* Sidebar */
+      .sidebar{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.5rem;height:fit-content;sticky:top:1rem}
+      .sidebar-title{color:var(--accent);font-weight:bold;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:0.75rem}
+      .bet-item{padding:0.75rem;background:rgba(0,0,0,0.2);border-radius:6px;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;font-size:0.9rem}
+      .bet-item-number{color:var(--accent);font-weight:bold}
+      .bet-item-amount{color:var(--muted)}
+      .bet-remove{background:rgba(200,0,0,0.3);border:none;color:#ff6b6b;padding:0.25rem 0.5rem;border-radius:4px;cursor:pointer;font-size:0.8rem}
+      .total-bet{background:rgba(212,175,55,0.1);border:1px solid var(--accent);padding:1rem;border-radius:6px;text-align:center;margin-top:1rem}
+      .total-bet-label{color:var(--muted);font-size:0.85rem}
+      .total-bet-amount{color:var(--accent);font-size:1.3rem;font-weight:bold}
+      
+      /* Info */
+      .info{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1rem;margin:1.5rem 0;font-size:0.9rem}
+      .info-row{display:flex;justify-content:space-between;padding:0.5rem 0}
+      .info-label{color:var(--muted)}
+      .info-value{color:var(--accent);font-weight:bold}
+      
+      footer{margin-top:2rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.05);text-align:center;color:var(--muted);font-size:0.9rem}
+      
+      @media(max-width:1000px){
+        .main-container{grid-template-columns:1fr}
+        .wheel{width:250px;height:250px}
+        .wheel-number{font-size:0.8rem}
+        .wheel-number .label{padding:2px 4px}
+      }
+      @media(max-width:420px){
+        /* On very small screens hide labels to avoid overlap; numbers still available via the grid below */
+        .wheel-number{display:none}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="brand"><a href="/">SKYSINO</a></div>
+        <h1>🎡 Roulette Classique</h1>
+      </header>
+
+      <div class="alert">
+        ℹ️ Mode démo gratuit — Numéro gagne 35x votre mise, Zones (rouge, noir, pair, impair) gagnent 2x!
+      </div>
+
+      <div class="main-container">
+        <!-- Main Table -->
+        <div class="table">
+          <!-- Wheel -->
+          <div class="wheel-section">
+            <div class="wheel-pointer"></div>
+            <div class="wheel" id="wheel"></div>
+          </div>
+
+          <!-- Result -->
+          <div class="result-display" id="resultDisplay">
+            <div class="result-text">Résultat du tour</div>
+            <div class="result-number" id="resultNumber">0</div>
+            <div class="result-text" id="resultText"></div>
+            <div class="result-amount" id="resultAmount"></div>
+          </div>
+
+          <!-- Betting -->
+          <div class="betting-section">
+            <label class="betting-label">Entrez votre mise:</label>
+            <input type="number" id="betAmount" placeholder="Montant par pari" min="1" value="10">
+            
+            <!-- Betting Zones -->
+            <div style="margin:1rem 0">
+              <div style="color:var(--muted);font-size:0.9rem;margin-bottom:0.5rem">Zones (gain 2x):</div>
+              <div class="betting-zones">
+                <button class="zone-btn red" onclick="toggleZone('red')">🔴 Rouge</button>
+                <button class="zone-btn black" onclick="toggleZone('black')">⬛ Noir</button>
+                <button class="zone-btn" onclick="toggleZone('even')">2️⃣ Pair</button>
+                <button class="zone-btn" onclick="toggleZone('odd')">1️⃣ Impair</button>
+                <button class="zone-btn" onclick="toggleZone('1-18')">1️⃣8️⃣ 1-18</button>
+                <button class="zone-btn" onclick="toggleZone('19-36')">1️⃣9️⃣ 19-36</button>
+              </div>
+            </div>
+            
+            <!-- Numbers -->
+            <div style="color:var(--muted);font-size:0.9rem;margin-top:1rem;margin-bottom:0.5rem">Numéros (gain 35x):</div>
+            <div class="numbers-grid" id="numbersGrid"></div>
+            
+            <button class="btn btn-outline" style="width:100%;margin-top:1rem" onclick="clearAllBets()">Effacer tous les paris</button>
+          </div>
+
+          <!-- Info -->
+          <div class="info">
+            <div class="info-row">
+              <span class="info-label">Solde</span>
+              <span class="info-value" id="balance">1000 ✪</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Total parié</span>
+              <span class="info-value" id="totalBet">0 ✪</span>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div style="display:flex;gap:1rem;margin-top:1.5rem">
+            <button class="btn btn-trial" onclick="spinWheel()" id="spinBtn" style="flex:1">Tourner la Roulette</button>
+            <button class="btn btn-outline" onclick="goHome()" style="flex:1">Retour</button>
+          </div>
+        </div>
+
+        <!-- Sidebar - Current Bets -->
+        <div class="sidebar">
+          <div class="sidebar-title">Vos Paris</div>
+          <div id="betsList" style="min-height:200px">
+            <p style="color:var(--muted);font-size:0.9rem;text-align:center">Aucun pari placé</p>
+          </div>
+          <div class="total-bet">
+            <div class="total-bet-label">Mise Totale</div>
+            <div class="total-bet-amount" id="totalBetSidebar">0 ✪</div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        © SKYSINO — Environnement de développement. Contenu fictif.
+      </footer>
+    </div>
+
+    <script>
+      // Roulette numbers: Red, Black, Green
+      const RED_NUMBERS = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+      const BLACK_NUMBERS = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35];
+
+      const SECTION_ANGLE = 360 / 37;
+
+      // Build wheel visual: equal sections and number labels
+      function initializeWheel() {
+        const wheel = document.getElementById('wheel');
+
+        // construct conic-gradient with equal-sized slices
+        const parts = [];
+        for (let i = 0; i <= 36; i++) {
+          const color = i === 0 ? 'green' : (isRed(i) ? 'red' : 'black');
+          const start = (i * SECTION_ANGLE);
+          const end = ((i + 1) * SECTION_ANGLE);
+          parts.push(`${color} ${start}deg ${end}deg`);
+        }
+        wheel.style.background = `conic-gradient(${parts.join(',')})`;
+        wheel.style.transition = 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+
+        // remove existing labels
+        Array.from(wheel.querySelectorAll('.wheel-number')).forEach(n => n.remove());
+
+        // add number labels around the wheel
+        const radius = Math.min(wheel.clientWidth, wheel.clientHeight) / 2 - 30;
+        for (let i = 0; i <= 36; i++) {
+          const angle = (i * SECTION_ANGLE) + SECTION_ANGLE / 2; // center of the slice
+          const el = document.createElement('div');
+          el.className = 'wheel-number';
+          const label = document.createElement('span');
+          label.className = 'label';
+          label.textContent = i;
+          // color the label background according to number color
+          if (i === 0) {
+            label.style.background = 'green';
+            label.style.color = '#081018';
+          } else if (isRed(i)) {
+            label.style.background = '#c62828';
+            label.style.color = '#fff';
+          } else {
+            label.style.background = '#0a0a0a';
+            label.style.color = '#fff';
+          }
+          el.appendChild(label);
+
+          // Position: rotate to angle, then translate upward by radius, then rotate back so text is readable
+          el.style.transform = `rotate(${angle}deg) translate(0, -${radius}px) rotate(-${angle}deg)`;
+          wheel.appendChild(el);
+        }
+      }
+
+      let game = {
+        balance: 1000,
+        bets: {}, // { betKey: amount }
+        isSpinning: false
+      };
+
+      function isRed(num) {
+        return RED_NUMBERS.includes(num);
+      }
+
+      function isBlack(num) {
+        return BLACK_NUMBERS.includes(num);
+      }
+
+      // Create number buttons
+      function initializeNumbers() {
+        const grid = document.getElementById('numbersGrid');
+        grid.innerHTML = '<button class="number-btn zero" onclick="toggleBet(\'0\')">0</button>';
+        for (let i = 1; i <= 36; i++) {
+          const color = isRed(i) ? 'red' : 'black';
+          const className = `number-btn ${color}`;
+          grid.innerHTML += `<button class="${className}" onclick="toggleBet('${i}')">${i}</button>`;
+        }
+      }
+
+      function toggleZone(zone) {
+        const betAmount = parseInt(document.getElementById('betAmount').value) || 0;
+        
+        if (!betAmount || betAmount <= 0) {
+          alert('Entrez un montant valide');
+          return;
+        }
+
+        const betKey = `zone-${zone}`;
+        
+        if (game.bets[betKey]) {
+          delete game.bets[betKey];
+        } else {
+          if (calculateTotalBet() + betAmount > game.balance) {
+            alert('Solde insuffisant');
+            return;
+          }
+          game.bets[betKey] = betAmount;
+        }
+
+        updateBetsDisplay();
+      }
+
+      function toggleBet(number) {
+        const betAmount = parseInt(document.getElementById('betAmount').value) || 0;
+        
+        if (!betAmount || betAmount <= 0) {
+          alert('Entrez un montant valide');
+          return;
+        }
+
+        if (game.bets[number]) {
+          delete game.bets[number];
+        } else {
+          if (calculateTotalBet() + betAmount > game.balance) {
+            alert('Solde insuffisant');
+            return;
+          }
+          game.bets[number] = betAmount;
+        }
+
+        updateBetsDisplay();
+      }
+
+      function calculateTotalBet() {
+        return Object.values(game.bets).reduce((a, b) => a + b, 0);
+      }
+
+      function updateBetsDisplay() {
+        // Update zone buttons
+        ['red', 'black', 'even', 'odd', '1-18', '19-36'].forEach(zone => {
+          const btns = document.querySelectorAll(`.zone-btn`);
+          btns.forEach(btn => {
+            let zoneMatch = false;
+            if (zone === 'even' && btn.textContent.includes('Pair')) zoneMatch = true;
+            if (zone === 'odd' && btn.textContent.includes('Impair')) zoneMatch = true;
+            if (zone === 'red' && btn.textContent.includes('Rouge')) zoneMatch = true;
+            if (zone === 'black' && btn.textContent.includes('Noir')) zoneMatch = true;
+            if (zone === '1-18' && btn.textContent.includes('1-18')) zoneMatch = true;
+            if (zone === '19-36' && btn.textContent.includes('19-36')) zoneMatch = true;
+            
+            if (zoneMatch) {
+              if (game.bets[`zone-${zone}`]) {
+                btn.classList.add('selected');
+              } else {
+                btn.classList.remove('selected');
+              }
+            }
+          });
+        });
+
+        // Update number buttons
+        document.querySelectorAll('.number-btn').forEach(btn => {
+          btn.classList.remove('selected');
+        });
+        Object.keys(game.bets).forEach(key => {
+          if (!key.startsWith('zone-')) {
+            const buttons = document.querySelectorAll('.number-btn');
+            buttons.forEach(btn => {
+              if (btn.textContent === key) {
+                btn.classList.add('selected');
+              }
+            });
+          }
+        });
+
+        // Update sidebar
+        const betsList = document.getElementById('betsList');
+        if (Object.keys(game.bets).length === 0) {
+          betsList.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;text-align:center">Aucun pari placé</p>';
+        } else {
+          betsList.innerHTML = Object.entries(game.bets)
+            .map(([key, amount]) => {
+              let label = key;
+              if (key.startsWith('zone-')) {
+                const zone = key.replace('zone-', '');
+                label = zone === 'red' ? '🔴 Rouge' : zone === 'black' ? '⬛ Noir' : zone === 'even' ? '2️⃣ Pair' : zone === 'odd' ? '1️⃣ Impair' : zone === '1-18' ? '1️⃣8️⃣ 1-18' : '1️⃣9️⃣ 19-36';
+              } else {
+                label = `N°${key}`;
+              }
+              return `
+                <div class="bet-item">
+                  <span><span class="bet-item-number">${label}</span></span>
+                  <span class="bet-item-amount">${amount} ✪</span>
+                  <button class="bet-remove" onclick="removeBet('${key}')">✕</button>
+                </div>
+              `;
+            }).join('');
+        }
+
+        const total = calculateTotalBet();
+        document.getElementById('totalBet').textContent = total + ' ✪';
+        document.getElementById('totalBetSidebar').textContent = total + ' ✪';
+      }
+
+      function removeBet(key) {
+        if (key.startsWith('zone-')) {
+          toggleZone(key.replace('zone-', ''));
+        } else {
+          toggleBet(key);
+        }
+      }
+
+      function clearAllBets() {
+        game.bets = {};
+        updateBetsDisplay();
+      }
+
+      function spinWheel() {
+        const totalBet = calculateTotalBet();
+        
+        if (totalBet === 0) {
+          alert('Placez au moins un pari!');
+          return;
+        }
+
+        if (totalBet > game.balance) {
+          alert('Solde insuffisant');
+          return;
+        }
+
+        game.balance -= totalBet;
+        game.isSpinning = true;
+        document.getElementById('spinBtn').disabled = true;
+
+        // Spin animation using computed section angle
+        const wheel = document.getElementById('wheel');
+        const winningNumber = Math.floor(Math.random() * 37);
+        const rotations = Math.floor(Math.random() * 5) + 5;
+
+        // targetAngle is the center of the winning slice
+        const targetAngle = (winningNumber * SECTION_ANGLE) + (SECTION_ANGLE / 2);
+        // rotate so that the targetAngle aligns with the pointer at 0deg
+        const randomDegree = (rotations * 360) + (360 - targetAngle);
+
+        // apply transform; transition is set on the wheel element
+        wheel.style.transform = `rotate(${randomDegree}deg)`;
+
+        setTimeout(() => {
+          showResult(winningNumber, totalBet);
+          document.getElementById('spinBtn').disabled = false;
+          game.isSpinning = false;
+        }, 3100);
+      }
+
+      function showResult(winningNumber, totalBet) {
+        let winnings = 0;
+        let winningBets = [];
+
+        // Check direct number bet
+        if (game.bets[winningNumber]) {
+          winnings += game.bets[winningNumber] * 35;
+          winningBets.push(`Numéro ${winningNumber}`);
+        }
+
+        // Check zones
+        if (game.bets['zone-red'] && isRed(winningNumber)) {
+          winnings += game.bets['zone-red'] * 2;
+          winningBets.push('Rouge');
+        }
+
+        if (game.bets['zone-black'] && isBlack(winningNumber)) {
+          winnings += game.bets['zone-black'] * 2;
+          winningBets.push('Noir');
+        }
+
+        if (game.bets['zone-even'] && winningNumber % 2 === 0 && winningNumber !== 0) {
+          winnings += game.bets['zone-even'] * 2;
+          winningBets.push('Pair');
+        }
+
+        if (game.bets['zone-odd'] && winningNumber % 2 === 1) {
+          winnings += game.bets['zone-odd'] * 2;
+          winningBets.push('Impair');
+        }
+
+        if (game.bets['zone-1-18'] && winningNumber >= 1 && winningNumber <= 18) {
+          winnings += game.bets['zone-1-18'] * 2;
+          winningBets.push('1-18');
+        }
+
+        if (game.bets['zone-19-36'] && winningNumber >= 19 && winningNumber <= 36) {
+          winnings += game.bets['zone-19-36'] * 2;
+          winningBets.push('19-36');
+        }
+
+        game.balance += winnings;
+
+        let message = 'Vous avez perdu!';
+        if (winnings > 0) {
+          message = `${winningBets.join(', ')} gagnant! Vous avez gagné ${winnings} ✪!`;
+        }
+
+        document.getElementById('resultNumber').textContent = winningNumber;
+        document.getElementById('resultText').textContent = message;
+        document.getElementById('resultAmount').textContent = winnings > 0 ? `+${winnings} ✪` : '0 ✪';
+        document.getElementById('resultDisplay').classList.add('show');
+        document.getElementById('balance').textContent = game.balance + ' ✪';
+
+        game.bets = {};
+        updateBetsDisplay();
+
+        if (game.balance <= 0) {
+          setTimeout(() => {
+            alert('Vous n\'avez plus de jetons!');
+            goHome();
+          }, 2000);
+        }
+
+        setTimeout(() => {
+          document.getElementById('resultDisplay').classList.remove('show');
+        }, 4000);
+      }
+
+      function goHome() {
+        window.location.href = '/';
+      }
+
+      // Initialize
+      initializeWheel();
+      initializeNumbers();
+      updateBetsDisplay();
+    </script>
+  </body>
+</html>
