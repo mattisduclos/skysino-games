@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SKYSINO — Casino en ligne (dev)</title>
+    <style>
+      :root {
+        --bg-a: #021428;
+        --bg-b: #06213a;
+        --accent: #d4af37;
+        --accent-2: #c9972b;
+        --muted: #cfc7b0;
+        --container: 1200px;
+      }
+      *{box-sizing:border-box}
+      html,body{height:100%;margin:0}
+      body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--bg-a),var(--bg-b));color:#f6f4ef;-webkit-font-smoothing:antialiased}
+      .wrap{max-width:var(--container);margin:0 auto;padding:2rem}
+      
+      /* Header */
+      header.site-top{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;background:transparent;border-bottom:1px solid rgba(255,255,255,0.05)}
+      .brand{display:flex;align-items:center;gap:.75rem}
+      .brand a{color:var(--accent);text-decoration:none;font-weight:700;font-size:1.25rem}
+      nav.main{display:flex;gap:1rem;align-items:center}
+      nav.main a{color:var(--muted);text-decoration:none;font-weight:600}
+      .nav-right{display:flex;gap:1rem;align-items:center}
+      .btn{padding:.6rem 1rem;border-radius:8px;border:0;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+      .btn-trial{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#081018}
+      .btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+      
+      /* Hero */
+      .hero{margin-top:2rem;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:2rem;border-radius:14px;display:grid;grid-template-columns:1fr 420px;gap:1.5rem;align-items:center}
+      .hero .kicker{color:var(--accent);font-weight:700;margin-bottom:.5rem}
+      .hero h2{margin:0 0 .5rem;font-size:2rem;color:#fff}
+      .hero p{color:var(--muted);margin:0 0 1rem}
+      .hero-right{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:1.25rem;border-radius:12px;text-align:center;border:1px solid rgba(255,255,255,0.02)}
+      .jackpot{font-size:1.25rem;font-weight:700;color:var(--accent)}
+      .promo-carousel{height:150px;border-radius:10px;background:linear-gradient(90deg, rgba(212,175,55,0.06), rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:700}
+      
+      /* Games */
+      .games-section{margin-top:2rem}
+      .game-section{margin-top:1.5rem;padding:1.5rem;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+      .game-section > div{display:grid;grid-template-columns:300px 1fr;gap:1.5rem;align-items:center}
+      .game-section h4{margin:0;font-size:1.5rem;color:#fff}
+      .game-section p{color:var(--muted);margin:0.5rem 0}
+      .game-section img{height:200px;border-radius:10px;display:block;width:100%;object-fit:cover;box-shadow:0 8px 20px rgba(2,6,23,0.35)}
+      
+      /* Promos */
+      .promos{display:flex;gap:1rem;margin-top:1.5rem}
+      .promo{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+      
+      /* Footer */
+      footer{margin-top:2rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.05);text-align:center;color:var(--muted);font-size:.9rem}
+      
+      @media(max-width:900px){
+        .hero{grid-template-columns:1fr}
+        nav.main{display:none}
+        .game-section > div{grid-template-columns:1fr}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="site-top">
+        <div class="brand">
+          <a href="/">SKYSINO</a>
+        </div>
+
+        <nav class="main">
+          <a href="/">Accueil</a>
+          <a href="#jeux">Jeux</a>
+          <a href="#howto">Aide</a>
+        </nav>
+
+        <div class="nav-right">
+          <span id="nav-login-group">
+            <a class="btn btn-outline" href="/app.html">Se connecter</a>
+          </span>
+          <span id="nav-user-group" style="display:none;color:var(--muted);display:flex;gap:1rem;align-items:center">
+            <span>Connecté: <strong id="nav-username"></strong></span>
+            <button class="btn btn-outline" onclick="logoutHome()">Déconnexion</button>
+          </span>
+        </div>
+      </header>
+
+      <main>
+        <!-- HERO -->
+        <section class="hero">
+          <div>
+            <div class="kicker">NOUVEAU</div>
+            <h2>Jouez à nos tables et machines</h2>
+            <p class="lead">Testez nos jeux de casino en mode démo ou connectez-vous pour jouer avec votre compte personnel et vos vraies mises.</p>
+            <div style="margin-top:1rem">
+              <a class="btn btn-trial" id="hero-btn" href="/app.html">Se connecter et jouer</a>
+            </div>
+            <div style="margin-top:1.25rem" class="promo-carousel">Bonus: 1000 ✪ offerts à l'inscription</div>
+          </div>
+
+          <aside class="hero-right">
+            <div style="text-align:left;color:var(--muted);font-size:.9rem;margin-bottom:.5rem">Votre solde</div>
+            <div class="jackpot" id="hero-balance">Connectez-vous</div>
+            <div style="margin-top:.75rem">
+              <button class="btn btn-outline" onclick="updateBalance()" id="refresh-balance" style="display:none">Rafraîchir</button>
+            </div>
+          </aside>
+        </section>
+
+        <!-- JEUX -->
+        <section id="jeux" class="games-section">
+          <h3 style="margin-top:2rem;margin-bottom:1rem">Jeux disponibles</h3>
+
+          <!-- Poker Demo -->
+          <div class="game-section">
+            <div>
+              <img src="/assets/poker.png" alt="Poker" />
+              <div>
+                <h4>♠️ Poker</h4>
+                <p>Pariez stratégiquement et battez les autres joueurs. Une simulation complète du poker classique.</p>
+                <div style="margin-top:1rem">
+                  <a class="btn btn-trial" href="/poker.html">Jouer au Poker</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Roulette Demo -->
+          <div class="game-section">
+            <div>
+              <img src="/assets/roulette.png" alt="Roulette" />
+              <div>
+                <h4>🎡 Roulette</h4>
+                <p>Choisissez un numéro de 0 à 36, pariez et tentez de remporter 35 fois votre mise!</p>
+                <div style="margin-top:1rem">
+                  <a class="btn btn-trial" href="/roulette.html">Jouer à la Roulette</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slots Demo -->
+          <div class="game-section">
+            <div>
+              <img src="/assets/slots.svg" alt="Slots" />
+              <div>
+                <h4>🎰 Machines à sous</h4>
+                <p>Alignez les symboles pour remporter des multiplicateurs. 3 identiques = 10× votre mise!</p>
+                <div style="margin-top:1rem">
+                  <a class="btn btn-trial" href="/slots.html">Jouer aux Slots</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Blackjack Demo -->
+          <div class="game-section">
+            <div>
+              <img src="/assets/blackjack.png" alt="Blackjack" />
+              <div>
+                <h4>🃏 Blackjack</h4>
+                <p>Approchez-vous de 21 sans dépasser. Battez le croupier et remportez vos jetons!</p>
+                <div style="margin-top:1rem">
+                  <a class="btn btn-trial" href="/blackjack.html">Jouer au Blackjack</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PROMOS -->
+        <section class="promos">
+          <div class="promo">
+            <strong>Bonus de bienvenue (démo)</strong>
+            <div style="color:var(--muted);margin-top:.5rem">Recevez 1000 ✪ pour tester nos jeux. Offre uniquement sur l'environnement de développement.</div>
+          </div>
+          <div class="promo">
+            <strong>Mode démo gratuit</strong>
+            <div style="color:var(--muted);margin-top:.5rem">Testez tous les jeux en mode démo sans créer de compte.</div>
+          </div>
+        </section>
+
+        <!-- HOWTO -->
+        <section id="howto" style="margin-top:2rem">
+          <h3>Comment démarrer</h3>
+          <p style="color:var(--muted)">Vous avez deux options :</p>
+          <div style="margin-top:1rem">
+            <strong style="color:#fff">Option 1 : Mode démo (sans compte)</strong>
+            <p style="color:var(--muted)">Cliquez sur n'importe quel bouton "Jouer" ci-dessus pour accéder à la démo gratuite.</p>
+            
+            <strong style="color:#fff;margin-top:1rem;display:block">Option 2 : Créer un compte</strong>
+            <p style="color:var(--muted)">
+              1. Cliquez sur "Se connecter et jouer" en haut<br>
+              2. Inscrivez-vous avec un nom d'utilisateur et mot de passe<br>
+              3. Accédez aux jeux authentifiés avec votre solde personnel
+            </p>
+          </div>
+        </section>
+
+        <footer>
+          © SKYSINO — Environnement de développement. Contenu et crédits fictifs.
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      let token = localStorage.getItem('token');
+
+      function checkAuth() {
+        const loginGroup = document.getElementById('nav-login-group');
+        const userGroup = document.getElementById('nav-user-group');
+        
+        if (token) {
+          loginGroup.style.display = 'none';
+          userGroup.style.display = 'flex';
+          updateBalance();
+        } else {
+          loginGroup.style.display = 'block';
+          userGroup.style.display = 'none';
+          document.getElementById('hero-balance').textContent = 'Connectez-vous pour voir votre solde';
+        }
+      }
+
+      async function updateBalance() {
+        if (!token) return;
+        try {
+          const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+          if (!res.ok) { logoutHome(); return; }
+          const data = await res.json();
+          document.getElementById('nav-username').textContent = data.username;
+          document.getElementById('hero-balance').textContent = data.balance + ' ✪';
+          document.getElementById('refresh-balance').style.display = 'inline-block';
+        } catch (e) {
+          logoutHome();
+        }
+      }
+
+      function goToGame(game) {
+        if (token) {
+          // Connecté : aller à la page authentifiée
+          window.location.href = '/' + game + '.html';
+        } else {
+          // Pas connecté : aller à la démo
+          window.location.href = '/' + game + '-demo.html';
+        }
+      }
+
+      function logoutHome() {
+        localStorage.removeItem('token');
+        token = null;
+        checkAuth();
+      }
+
+      // Vérifier l'auth au chargement
+      checkAuth();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Machines à Sous Classiques — SKYSINO</title>
+    <style>
+      :root {
+        --accent: #d4af37;
+        --accent-2: #c9972b;
+        --bg-a: #021428;
+        --bg-b: #06213a;
+        --muted: #cfc7b0;
+        --container: 900px;
+      }
+      *{box-sizing:border-box}
+      html,body{height:100%;margin:0}
+      body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--bg-a),var(--bg-b));color:#f6f4ef;-webkit-font-smoothing:antialiased}
+      .wrap{max-width:var(--container);margin:0 auto;padding:1.5rem}
+      header{display:flex;align-items:center;justify-content:space-between;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,0.05);margin-bottom:2rem}
+      .brand a{color:var(--accent);text-decoration:none;font-weight:700;font-size:1.25rem}
+      h1{margin:0;color:#fff;font-size:1.75rem}
+      .btn{padding:0.6rem 1rem;border-radius:8px;border:0;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:all 0.3s}
+      .btn:disabled{opacity:0.5;cursor:not-allowed}
+      .btn-trial{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#081018}
+      .btn-trial:hover:not(:disabled){filter:brightness(1.1)}
+      .btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--muted)}
+      
+      .alert{background:rgba(212,175,55,0.1);border:1px solid var(--accent);color:var(--accent);padding:1rem;border-radius:8px;margin-bottom:2rem}
+      
+      .machine{background:linear-gradient(135deg,#0a3a2a,#0d5a40);border-radius:16px;padding:2rem;border:4px solid var(--accent);box-shadow:0 0 30px rgba(212,175,55,0.2)}
+      
+      /* Slots Display */
+      .slots-display{display:flex;justify-content:center;gap:1.5rem;margin:2rem 0;padding:2rem;background:rgba(0,0,0,0.4);border-radius:12px;perspective:1000px}
+      
+      .reel{width:100px;height:150px;background:linear-gradient(180deg,rgba(255,255,255,0.1),rgba(0,0,0,0.3));border:3px solid var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:3rem;font-weight:bold;box-shadow:0 4px 12px rgba(0,0,0,0.5);transition:all 0.1s;overflow:hidden}
+      
+      .reel.spinning{animation:spin 0.1s linear infinite}
+      @keyframes spin{0%{transform:rotateX(0deg)}100%{transform:rotateX(360deg)}}
+      
+      /* Game Info */
+      .info-section{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.5rem;margin:1.5rem 0;text-align:center}
+      .info-row{display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+      .info-row:last-child{border-bottom:none}
+      .info-label{color:var(--muted);font-size:0.95rem}
+      .info-value{color:var(--accent);font-weight:bold;font-size:1.1rem}
+      
+      .bet-section{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.5rem;margin:1.5rem 0;text-align:center}
+      .bet-section label{color:var(--muted);font-size:0.95rem;display:block;margin-bottom:0.75rem}
+      input[type="number"]{width:100%;padding:0.75rem;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;margin-bottom:1rem;max-width:200px}
+      
+      .quick-buttons{display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap}
+      .quick-buttons button{margin-bottom:0.5rem}
+      
+      .controls{display:flex;gap:1rem;justify-content:center;margin:2rem 0;flex-wrap:wrap}
+      
+      .result-message{text-align:center;padding:1.5rem;background:rgba(212,175,55,0.1);border:2px solid var(--accent);border-radius:12px;margin:1.5rem 0;display:none}
+      .result-message.show{display:block}
+      .result-message h3{color:var(--accent);margin:0 0 0.5rem;font-size:1.5rem}
+      .result-message p{color:var(--muted);margin:0.25rem}
+      .result-message .amount{color:#22c55e;font-size:1.2rem;font-weight:bold;margin-top:0.5rem}
+      
+      /* Payout Table */
+      .payout-table{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1rem;margin:2rem 0;font-size:0.9rem}
+      .payout-table h4{color:var(--accent);margin:0 0 1rem;text-align:center}
+      .payout-row{display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+      .payout-row:last-child{border-bottom:none}
+      .payout-symbol{color:var(--muted)}
+      .payout-amount{color:var(--accent);font-weight:bold}
+      
+      footer{margin-top:2rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.05);text-align:center;color:var(--muted);font-size:0.9rem}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="brand"><a href="/">SKYSINO</a></div>
+        <h1>🎰 Machines à Sous Classiques</h1>
+      </header>
+
+      <div class="alert">
+        ℹ️ Mode démo gratuit — 3 symboles identiques = 10x votre mise!
+      </div>
+
+      <div class="machine">
+        <!-- Slots -->
+        <div class="slots-display">
+          <div class="reel" id="reel1">🍒</div>
+          <div class="reel" id="reel2">🍒</div>
+          <div class="reel" id="reel3">🍒</div>
+        </div>
+
+        <!-- Info -->
+        <div class="info-section">
+          <div class="info-row">
+            <span class="info-label">Solde</span>
+            <span class="info-value" id="balance">1000 ✪</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Dernière Mise</span>
+            <span class="info-value" id="lastBet">0 ✪</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Dernier Gain</span>
+            <span class="info-value" id="lastWin">0 ✪</span>
+          </div>
+        </div>
+
+        <!-- Bet Section -->
+        <div class="bet-section" id="betSection">
+          <label>Placez votre mise:</label>
+          <input type="number" id="betInput" placeholder="Montant" min="1" value="50">
+          <div class="quick-buttons">
+            <button class="btn btn-outline" onclick="quickBet(10)">+10</button>
+            <button class="btn btn-outline" onclick="quickBet(25)">+25</button>
+            <button class="btn btn-outline" onclick="quickBet(50)">+50</button>
+            <button class="btn btn-outline" onclick="quickBet(100)">+100</button>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+          <button class="btn btn-trial" onclick="spin()" id="spinBtn">Tourner (Entrée)</button>
+          <button class="btn btn-outline" onclick="goHome()">Retour</button>
+        </div>
+
+        <!-- Result -->
+        <div class="result-message" id="resultMessage">
+          <h3 id="resultTitle">Résultat</h3>
+          <p id="resultText"></p>
+          <div class="amount" id="resultAmount"></div>
+        </div>
+
+        <!-- Payout Table -->
+        <div class="payout-table">
+          <h4>Table des Gains</h4>
+          <div class="payout-row">
+            <span class="payout-symbol">3x 🍒</span>
+            <span class="payout-amount">10x mise</span>
+          </div>
+          <div class="payout-row">
+            <span class="payout-symbol">3x 🍋</span>
+            <span class="payout-amount">10x mise</span>
+          </div>
+          <div class="payout-row">
+            <span class="payout-symbol">3x 🔔</span>
+            <span class="payout-amount">15x mise</span>
+          </div>
+          <div class="payout-row">
+            <span class="payout-symbol">3x ⭐</span>
+            <span class="payout-amount">20x mise</span>
+          </div>
+          <div class="payout-row">
+            <span class="payout-symbol">3x 7️⃣</span>
+            <span class="payout-amount">50x mise (Jackpot!)</span>
+          </div>
+          <div class="payout-row">
+            <span class="payout-symbol">2x Identiques</span>
+            <span class="payout-amount">2x mise</span>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        © SKYSINO — Environnement de développement. Contenu fictif.
+      </footer>
+    </div>
+
+    <script>
+      const SYMBOLS = ['🍒', '🍋', '🔔', '⭐', '7️⃣'];
+      const PAYOUTS = {
+        '🍒🍒🍒': 10,
+        '🍋🍋🍋': 10,
+        '🔔🔔🔔': 15,
+        '⭐⭐⭐': 20,
+        '7️⃣7️⃣7️⃣': 50,
+        'pair': 2
+      };
+
+      let game = {
+        balance: 1000,
+        bet: 0,
+        isSpinning: false,
+        result: [null, null, null]
+      };
+
+      function quickBet(amount) {
+        const input = document.getElementById('betInput');
+        input.value = (parseInt(input.value) || 0) + amount;
+      }
+
+      function spin() {
+        const betAmount = parseInt(document.getElementById('betInput').value);
+        
+        if (!betAmount || betAmount <= 0) {
+          alert('Mise invalide');
+          return;
+        }
+
+        if (betAmount > game.balance) {
+          alert('Solde insuffisant');
+          return;
+        }
+
+        game.bet = betAmount;
+        game.balance -= betAmount;
+        game.isSpinning = true;
+
+        document.getElementById('spinBtn').disabled = true;
+        document.getElementById('resultMessage').classList.remove('show');
+
+        // Animation de rotation
+        const reels = ['reel1', 'reel2', 'reel3'];
+        reels.forEach(reel => {
+          document.getElementById(reel).classList.add('spinning');
+        });
+
+        // Durée de rotation aléatoire
+        const spinDuration = 2000 + Math.random() * 1000;
+        
+        setTimeout(() => {
+          // Arrêter la rotation et afficher les résultats
+          const results = [];
+          for (let i = 0; i < 3; i++) {
+            const symbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+            results.push(symbol);
+          }
+
+          game.result = results;
+
+          reels.forEach((reel, i) => {
+            document.getElementById(reel).classList.remove('spinning');
+            document.getElementById(reel).textContent = results[i];
+          });
+
+          determineWinner(results);
+
+          document.getElementById('spinBtn').disabled = false;
+          game.isSpinning = false;
+        }, spinDuration);
+      }
+
+      function determineWinner(results) {
+        const resultKey = results.join('');
+        let winnings = 0;
+        let message = 'Vous avez perdu!';
+        let title = '😢 Perdu';
+
+        // Vérifier 3 identiques
+        if (PAYOUTS[resultKey]) {
+          winnings = game.bet * PAYOUTS[resultKey];
+          message = `Trois ${results[0]} ! Jackpot!`;
+          title = '🎉 Gagné!';
+        } 
+        // Vérifier 2 identiques
+        else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
+          winnings = game.bet * 2;
+          message = 'Deux symboles identiques!';
+          title = '✨ Petit Gain';
+        }
+
+        game.balance += winnings;
+
+        document.getElementById('lastBet').textContent = game.bet + ' ✪';
+        document.getElementById('lastWin').textContent = winnings + ' ✪';
+        document.getElementById('balance').textContent = game.balance + ' ✪';
+
+        document.getElementById('resultTitle').textContent = title;
+        document.getElementById('resultText').textContent = message;
+        document.getElementById('resultAmount').textContent = winnings > 0 ? `+${winnings} ✪` : '0 ✪';
+        document.getElementById('resultMessage').classList.add('show');
+
+        if (game.balance <= 0) {
+          setTimeout(() => {
+            alert('Vous n\'avez plus de jetons!');
+            goHome();
+          }, 1500);
+        }
+      }
+
+      function goHome() {
+        window.location.href = '/';
+      }
+
+      // Keyboard support
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !game.isSpinning) {
+          spin();
+        }
+      });
+    </script>
+  </body>
+</html>
+
+      <div class="game-container">
+        <div class="game-board">
+          <h3>Machines à sous</h3>
+          <p style="color:var(--muted)">3 symboles identiques = 10× votre mise. 2 identiques = 2× votre mise.</p>
+          <div class="slots-display" id="slots-display">
+            <div class="slot">?</div>
+            <div class="slot">?</div>
+            <div class="slot">?</div>
+          </div>
+          <div class="result" id="slots-result"></div>
+        </div>
+
+        <div class="sidebar">
+          <h4 style="margin:0 0 1rem;color:#fff">Pariez aux Slots</h4>
+          <div class="bet-controls">
+            <label style="color:var(--muted);font-size:0.9rem">Mise (démo):</label>
+            <input id="slots-bet" type="number" placeholder="Montant" min="1" value="10" />
+            <button class="btn btn-trial" onclick="playSlots()" style="width:100%">Tourner</button>
+            <button class="btn btn-outline" onclick="goHome()" style="width:100%">Retour à l'accueil</button>
+            <button class="btn btn-outline" onclick="login()" style="width:100%;margin-top:0.5rem">Se connecter</button>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        © SKYSINO — Environnement de développement. Contenu fictif.
+      </footer>
+    </div>
+
+    <script>
+      function playSlots() {
+        const bet = Number(document.getElementById('slots-bet').value);
+        if (!bet || bet <= 0) { alert('Mise invalide'); return; }
+        
+        const display = document.getElementById('slots-display');
+        display.querySelectorAll('.slot').forEach(s => s.textContent = '?');
+        
+        const symbols = ['🍒','🍋','🔔','⭐','7'];
+        const a = symbols[Math.floor(Math.random() * symbols.length)];
+        const b = symbols[Math.floor(Math.random() * symbols.length)];
+        const c = symbols[Math.floor(Math.random() * symbols.length)];
+
+        let multiplier = 0;
+        if (a === b && b === c) multiplier = 10;
+        else if (a === b || b === c || a === c) multiplier = 2;
+
+        const payout = multiplier > 0 ? bet * multiplier : 0;
+        
+        const slots = display.querySelectorAll('.slot');
+        slots[0].textContent = a;
+        slots[1].textContent = b;
+        slots[2].textContent = c;
+        
+        const resultEl = document.getElementById('slots-result');
+        resultEl.innerHTML = `
+          <strong>${multiplier > 0 ? 'Gagné! 🎉' : 'Perdu 😢'}</strong><br>
+          Multiplicateur: ${multiplier}×<br>
+          Gain: ${payout}
+        `;
+        resultEl.classList.add('show', multiplier > 0 ? 'win' : '');
+      }
+
+      function goHome() { window.location.href = '/'; }
+      function login() { window.location.href = '/app.html'; }
+    </script>
+  </body>
+</html>

@@ -40,8 +40,8 @@
       .card.hidden{background:#06213a;border:2px solid var(--accent);color:#fff;font-size:1.5rem}
         .card{flex-direction:column;padding:0.5rem;text-align:center}
         .card{perspective:900px}
-        .card-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.6s}
-        .card.flipped .card-inner{transform:rotateY(180deg)}
+        .card-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.45s cubic-bezier(0.2,0.8,0.2,1)}
+        .card.flipped .card-inner{transform:rotateY(180deg) scale(1.03)}
         .card-front,.card-back{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;backface-visibility:hidden}
         .card-front{background:transparent}
         .card-back{background:linear-gradient(180deg,#06213a,#0b3b2a);color:#fff;transform:rotateY(180deg);font-size:2rem}
@@ -207,9 +207,10 @@
       }
 
       // Render card with flip/back support
+      // face=true => show front; face=false => show back
       function renderCard(card, face = true) {
         const color = getCardColor(card.suit);
-        const flipped = face ? 'flipped' : '';
+        const flipped = face ? '' : 'flipped';
         return `
           <div class="card ${color} ${flipped}">
             <div class="card-inner">
@@ -270,19 +271,20 @@
         updateDisplay();
 
         // Check for blackjack
-        // Animate card flips for player and visible dealer card
+        // Animate card flips for player (deal) and prepare dealer card hidden
         setTimeout(() => {
           const pCards = Array.from(document.querySelectorAll('#playerCards .card'));
           pCards.forEach((el, idx) => {
-            el.classList.remove('flipped');
-            setTimeout(() => el.classList.add('flipped'), 150 * idx + 100);
+            // briefly set to back then flip to front
+            el.classList.add('flipped');
+            setTimeout(() => el.classList.remove('flipped'), 180 + idx * 120);
           });
-          const dVisible = Array.from(document.querySelectorAll('#dealerCards .card'));
-          dVisible.slice(1).forEach((el, idx) => {
-            el.classList.remove('flipped');
-            setTimeout(() => el.classList.add('flipped'), 200 * idx + 300);
-          });
-        }, 50);
+          // ensure dealer first card remains hidden until reveal
+          const dCards = Array.from(document.querySelectorAll('#dealerCards .card'));
+          if (dCards.length > 0) {
+            dCards[0].classList.add('flipped');
+          }
+        }, 60);
         const playerScore = calculateScore(game.playerHand);
         const dealerScore = calculateScore(game.dealerHand);
         
@@ -343,6 +345,15 @@
         document.getElementById('resultMessage').textContent = message;
         document.getElementById('resultAmount').textContent = `Solde: ${game.balance} ✪`;
         
+        // reveal dealer's hidden card with a flip animation
+        setTimeout(() => {
+          const dCards = Array.from(document.querySelectorAll('#dealerCards .card'));
+          if (dCards.length > 0) {
+            // remove flipped to reveal
+            dCards[0].classList.remove('flipped');
+          }
+        }, 200);
+
         setTimeout(() => {
           document.getElementById('resultModal').classList.add('show');
         }, 1500);

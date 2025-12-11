@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40" role="img" aria-label="SKYSINO logo">
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1">
+      <stop offset="0" stop-color="#ffb84d"/>
+      <stop offset="1" stop-color="#ff6b6b"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="40" rx="8" fill="rgba(255,255,255,0.02)"/>
+  <g transform="translate(12,8)">
+    <circle cx="12" cy="12" r="12" fill="url(#g1)" />
+    <text x="36" y="18" font-family="Inter, Arial, sans-serif" font-size="12" fill="#fff">SKY<tspan fill="#ffb84d">SINO</tspan></text>
+  </g>
+</svg>

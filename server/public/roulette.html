@@ -205,38 +205,43 @@
 
       const SECTION_ANGLE = 360 / 37;
 
-      // Build wheel visual: equal sections and number labels
+      // Standard European roulette wheel order (0 then clockwise sequence)
+      const WHEEL_ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+
+      // Build wheel visual: equal sections and number labels using standard wheel order
       function initializeWheel() {
         const wheel = document.getElementById('wheel');
 
-        // construct conic-gradient with equal-sized slices
+        // construct conic-gradient with equal-sized slices in WHEEL_ORDER
         const parts = [];
-        for (let i = 0; i <= 36; i++) {
-          const color = i === 0 ? 'green' : (isRed(i) ? 'red' : 'black');
-          const start = (i * SECTION_ANGLE);
-          const end = ((i + 1) * SECTION_ANGLE);
+        for (let j = 0; j < WHEEL_ORDER.length; j++) {
+          const num = WHEEL_ORDER[j];
+          const color = num === 0 ? 'green' : (isRed(num) ? 'red' : 'black');
+          const start = (j * SECTION_ANGLE);
+          const end = ((j + 1) * SECTION_ANGLE);
           parts.push(`${color} ${start}deg ${end}deg`);
         }
         wheel.style.background = `conic-gradient(${parts.join(',')})`;
-        wheel.style.transition = 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        wheel.style.transition = 'transform 3s cubic-bezier(0.2, 0.8, 0.2, 1)';
 
         // remove existing labels
         Array.from(wheel.querySelectorAll('.wheel-number')).forEach(n => n.remove());
 
-        // add number labels around the wheel
+        // add number labels around the wheel (in WHEEL_ORDER positions)
         const radius = Math.min(wheel.clientWidth, wheel.clientHeight) / 2 - 30;
-        for (let i = 0; i <= 36; i++) {
-          const angle = (i * SECTION_ANGLE) + SECTION_ANGLE / 2; // center of the slice
+        for (let j = 0; j < WHEEL_ORDER.length; j++) {
+          const num = WHEEL_ORDER[j];
+          const angle = (j * SECTION_ANGLE) + SECTION_ANGLE / 2; // center of the slice
           const el = document.createElement('div');
           el.className = 'wheel-number';
           const label = document.createElement('span');
           label.className = 'label';
-          label.textContent = i;
+          label.textContent = num;
           // color the label background according to number color
-          if (i === 0) {
+          if (num === 0) {
             label.style.background = 'green';
             label.style.color = '#081018';
-          } else if (isRed(i)) {
+          } else if (isRed(num)) {
             label.style.background = '#c62828';
             label.style.color = '#fff';
           } else {
@@ -426,8 +431,9 @@
         const winningNumber = Math.floor(Math.random() * 37);
         const rotations = Math.floor(Math.random() * 5) + 5;
 
-        // targetAngle is the center of the winning slice
-        const targetAngle = (winningNumber * SECTION_ANGLE) + (SECTION_ANGLE / 2);
+        // determine the index of the winning number in the wheel order
+        const winningIndex = WHEEL_ORDER.indexOf(winningNumber);
+        const targetAngle = (winningIndex >= 0 ? (winningIndex * SECTION_ANGLE) + (SECTION_ANGLE / 2) : (winningNumber * SECTION_ANGLE) + (SECTION_ANGLE / 2));
         // rotate so that the targetAngle aligns with the pointer at 0deg
         const randomDegree = (rotations * 360) + (360 - targetAngle);
 
@@ -438,7 +444,7 @@
           showResult(winningNumber, totalBet);
           document.getElementById('spinBtn').disabled = false;
           game.isSpinning = false;
-        }, 3100);
+        }, 3200);
       }
 
       function showResult(winningNumber, totalBet) {

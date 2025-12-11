@@ -1,0 +1,55 @@
+:root{
+  --bg-a:#061426;
+  --bg-b:#071a2e;
+  --accent:#ffb84d;
+  --accent-2:#ff6b6b;
+  --muted:#9aa5b1;
+  --card:rgba(255,255,255,0.04);
+  --glass:rgba(255,255,255,0.03);
+  --container:1200px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--bg-a),var(--bg-b));color:#eef2f7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--container);margin:0 auto;padding:2rem}
+
+/* Header */
+header.site-top{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;background:transparent}
+.brand{display:flex;align-items:center;gap:.75rem}
+.brand img{height:40px}
+nav.main{display:flex;gap:1rem;align-items:center}
+nav.main a{color:var(--muted);text-decoration:none;font-weight:600}
+.cta-group{display:flex;gap:.5rem}
+.btn{padding:.6rem 1rem;border-radius:8px;border:0;font-weight:600;cursor:pointer}
+.btn-trial{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#081018}
+.btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+/* Hero */
+.hero{margin-top:1rem;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:2rem;border-radius:14px;display:grid;grid-template-columns:1fr 420px;gap:1.5rem;align-items:center}
+.hero .kicker{color:var(--accent);font-weight:700;margin-bottom:.5rem}
+.hero h2{margin:0 0 .5rem;font-size:2rem}
+.hero p{color:var(--muted);margin:0 0 1rem}
+.hero-right{background:var(--card);padding:1.25rem;border-radius:12px;text-align:center}
+.jackpot{font-size:1.25rem;font-weight:700;color:var(--accent)}
+
+/* Carousel placeholder */
+.promo-carousel{height:150px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:700}
+
+/* Games grid */
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1.25rem}
+.game-card{background:var(--card);padding:1rem;border-radius:12px;border:1px solid rgba(255,255,255,0.04);display:flex;flex-direction:column;gap:.5rem}
+.game-card .thumb{height:110px;background:linear-gradient(135deg,#0f2a2a,#1b0f2a);border-radius:8px;display:block;width:100%;object-fit:cover}
+.game-card h4{margin:0}
+.game-card p{margin:0;color:var(--muted);font-size:.95rem}
+
+/* Promotions */
+.promos{display:flex;gap:1rem;margin-top:1.25rem}
+.promo{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:1rem;border-radius:10px}
+
+/* Footer */
+footer{margin-top:2rem;padding:1rem 0;color:var(--muted);font-size:.9rem;text-align:center}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr}
+  nav.main{display:none}
+}

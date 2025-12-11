@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Minimal Casino — Jeu</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Arial; max-width: 900px; margin: 2rem auto; padding: 1rem; }
+      .card { border: 1px solid #ddd; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+      button { padding: 0.5rem 1rem; margin: 0.25rem; }
+      input { padding: 0.5rem; margin: 0.25rem 0; width: 100%; }
+      .symbols { font-size: 2rem; }
+    </style>
+  </head>
+  <body>
+    <h1>Minimal Casino (dev)</h1>
+
+    <div class="card" id="auth">
+      <h2>Authentication</h2>
+      <input id="username" placeholder="username" />
+      <input id="password" type="password" placeholder="password" />
+      <div>
+        <button id="btn-register">Register</button>
+        <button id="btn-login">Login</button>
+      </div>
+      <div id="auth-msg"></div>
+    </div>
+
+    <div class="card" id="me" style="display:none;">
+      <h2>Compte</h2>
+      <div>Utilisateur: <span id="me-username"></span></div>
+      <div>Solde: <strong id="me-balance"></strong></div>
+      <div>
+        <button id="btn-logout">Logout</button>
+      </div>
+    </div>
+
+    <div class="card" id="games" style="display:none;">
+      <h2>Jeux</h2>
+      <div id="roulette">
+        <h3>Roulette (parier sur un nombre 0-36)</h3>
+        <input id="roulette-bet" placeholder="Mise" />
+        <input id="roulette-number" placeholder="Nombre (0-36)" />
+        <button id="btn-roulette">Jouer Roulette</button>
+        <div id="roulette-result"></div>
+      </div>
+      <hr />
+      <div id="slots">
+        <h3>Slots</h3>
+        <input id="slots-bet" placeholder="Mise" />
+        <button id="btn-slots">Jouer Slots</button>
+        <div id="slots-result" class="symbols"></div>
+      </div>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

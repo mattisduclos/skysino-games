@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="140" viewBox="0 0 240 140" role="img" aria-label="Demo rounds icon">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#d4af37"/>
+      <stop offset="1" stop-color="#c9972b"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="140" rx="10" fill="#071a2e" />
+  <g transform="translate(24,20)">
+    <g fill="url(#g)">
+      <circle cx="36" cy="36" r="28" />
+      <rect x="74" y="12" width="90" height="48" rx="8" fill="#0f2a2a" />
+    </g>
+    <g transform="translate(70,32)" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="12">
+      <text x="0" y="0">TOURS</text>
+      <text x="0" y="18">DE DÉMO</text>
+    </g>
+  </g>
+</svg>
