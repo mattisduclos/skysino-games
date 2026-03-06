@@ -97,9 +97,14 @@
   </head>
   <body>
     <div class="wrap">
-      <header>
-        <div class="brand"><a href="/">SKYSINO</a></div>
-        <h1>🃏 Blackjack — Paiement 2x</h1>
+      <header style="display:flex;align-items:center;justify-content:space-between">
+        <div class="brand"><a href="/index.html">SKYSINO</a></div>
+        <h1>Blackjack - Paiement 2x</h1>
+        <div id="nav-auth" style="display:flex;gap:1rem;align-items:center">
+          <span id="nav-user" style="color:var(--muted);display:none;white-space:nowrap">Connect&eacute;: <strong id="nav-username"></strong></span>
+          <a href="/app.html" class="btn btn-outline" id="nav-login-btn" style="text-decoration:none;padding:0.5rem 1rem;font-size:0.9rem">Connexion</a>
+          <button class="btn btn-outline" id="nav-logout-btn" onclick="logoutGame()" style="display:none;padding:0.5rem 1rem;font-size:0.9rem">D&eacute;connexion</button>
+        </div>
       </header>
 
       <div class="alert">
@@ -418,8 +423,49 @@
       }
 
       function goHome() {
-        window.location.href = '/';
+        window.location.href = '/index.html';
       }
+
+      function getToken() {
+        return localStorage.getItem('token');
+      }
+
+      async function checkAuth() {
+        const token = getToken();
+        const navUser = document.getElementById('nav-user');
+        const navLoginBtn = document.getElementById('nav-login-btn');
+        const navLogoutBtn = document.getElementById('nav-logout-btn');
+
+        if (token) {
+          navLoginBtn.style.display = 'none';
+          navLogoutBtn.style.display = 'block';
+          navUser.style.display = 'inline';
+          try {
+            const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+            if (res.ok) {
+              const data = await res.json();
+              document.getElementById('nav-username').textContent = data.username;
+              game.balance = data.balance;
+              document.getElementById('playerBalance').textContent = game.balance + ' *';
+            } else {
+              logoutGame();
+            }
+          } catch (e) {
+            logoutGame();
+          }
+        } else {
+          navLoginBtn.style.display = 'block';
+          navLogoutBtn.style.display = 'none';
+          navUser.style.display = 'none';
+        }
+      }
+
+      function logoutGame() {
+        localStorage.removeItem('token');
+        checkAuth();
+      }
+
+      window.addEventListener('load', checkAuth);
 
       // Initialize
       game.deck = createDeck();

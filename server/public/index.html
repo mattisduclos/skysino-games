@@ -44,6 +44,8 @@
       .game-section > div{display:grid;grid-template-columns:300px 1fr;gap:1.5rem;align-items:center}
       .game-section h4{margin:0;font-size:1.5rem;color:#fff}
       .game-section p{color:var(--muted);margin:0.5rem 0}
+      .game-img{height:200px;border-radius:10px;display:block;width:100%;object-fit:cover;box-shadow:0 8px 20px rgba(2,6,23,0.35);border:2px solid var(--accent);transition:transform 0.3s ease}
+      .game-img:hover{transform:scale(1.05)}
       .game-section img{height:200px;border-radius:10px;display:block;width:100%;object-fit:cover;box-shadow:0 8px 20px rgba(2,6,23,0.35)}
       
       /* Promos */
@@ -113,10 +115,10 @@
           <!-- Poker Demo -->
           <div class="game-section">
             <div>
-              <img src="/assets/poker.png" alt="Poker" />
+              <img class="game-img" src="/assets/poker.png" alt="Poker Texas Hold'em" />
               <div>
-                <h4>♠️ Poker</h4>
-                <p>Pariez stratégiquement et battez les autres joueurs. Une simulation complète du poker classique.</p>
+                <h4>♠️ Poker Texas Hold'em</h4>
+                <p>Stratégie, bluff et tension ! Affrontez des adversaires IA dans des tournois passionnants. Maîtrisez l'art du poker avec des mains variées et des enjeux croissants.</p>
                 <div style="margin-top:1rem">
                   <a class="btn btn-trial" href="/poker.html">Jouer au Poker</a>
                 </div>
@@ -127,10 +129,10 @@
           <!-- Roulette Demo -->
           <div class="game-section">
             <div>
-              <img src="/assets/roulette.png" alt="Roulette" />
+              <img class="game-img" src="/assets/roulette.png" alt="Roulette Européenne" />
               <div>
-                <h4>🎡 Roulette</h4>
-                <p>Choisissez un numéro de 0 à 36, pariez et tentez de remporter 35 fois votre mise!</p>
+                <h4>🎡 Roulette Européenne</h4>
+                <p>Pariez sur les numéros ou les zones. Une roue de roulette authentique avec 37 cases. Tentez de remporter jusqu'à 35× votre mise sur un numéro!</p>
                 <div style="margin-top:1rem">
                   <a class="btn btn-trial" href="/roulette.html">Jouer à la Roulette</a>
                 </div>
@@ -141,10 +143,10 @@
           <!-- Slots Demo -->
           <div class="game-section">
             <div>
-              <img src="/assets/slots.svg" alt="Slots" />
+              <img class="game-img" src="/assets/slot.png" alt="Machines à sous" />
               <div>
-                <h4>🎰 Machines à sous</h4>
-                <p>Alignez les symboles pour remporter des multiplicateurs. 3 identiques = 10× votre mise!</p>
+                <h4>🎰 Machines à Sous</h4>
+                <p>Alignez les symboles pour les gros gains! Cerise, Citron, Cloche, Étoile ou 7 - chaque combinaison paie différemment. Jackpot possible!</p>
                 <div style="margin-top:1rem">
                   <a class="btn btn-trial" href="/slots.html">Jouer aux Slots</a>
                 </div>
@@ -155,10 +157,10 @@
           <!-- Blackjack Demo -->
           <div class="game-section">
             <div>
-              <img src="/assets/blackjack.png" alt="Blackjack" />
+              <img class="game-img" src="/assets/blackjack.png" alt="Blackjack" />
               <div>
                 <h4>🃏 Blackjack</h4>
-                <p>Approchez-vous de 21 sans dépasser. Battez le croupier et remportez vos jetons!</p>
+                <p>Le classique du casino ! Approchez-vous de 21 sans dépasser. Battez le croupier pour remporter vos jetons. Hit, Stand, Double - maîtrisez votre jeu!</p>
                 <div style="margin-top:1rem">
                   <a class="btn btn-trial" href="/blackjack.html">Jouer au Blackjack</a>
                 </div>
@@ -203,12 +205,14 @@
     </div>
 
     <script>
-      let token = localStorage.getItem('token');
+      function getToken() {
+        return localStorage.getItem('token');
+      }
 
       function checkAuth() {
+        const token = getToken();
         const loginGroup = document.getElementById('nav-login-group');
         const userGroup = document.getElementById('nav-user-group');
-        
         if (token) {
           loginGroup.style.display = 'none';
           userGroup.style.display = 'flex';
@@ -217,10 +221,12 @@
           loginGroup.style.display = 'block';
           userGroup.style.display = 'none';
           document.getElementById('hero-balance').textContent = 'Connectez-vous pour voir votre solde';
+          document.getElementById('refresh-balance').style.display = 'none';
         }
       }
 
       async function updateBalance() {
+        const token = getToken();
         if (!token) return;
         try {
           const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
@@ -235,6 +241,7 @@
       }
 
       function goToGame(game) {
+        const token = getToken();
         if (token) {
           // Connecté : aller à la page authentifiée
           window.location.href = '/' + game + '.html';
@@ -246,12 +253,11 @@
 
       function logoutHome() {
         localStorage.removeItem('token');
-        token = null;
         checkAuth();
       }
 
       // Vérifier l'auth au chargement
-      checkAuth();
+      window.addEventListener('DOMContentLoaded', checkAuth);
     </script>
   </body>
 </html>

@@ -19,7 +19,8 @@
       .wrap{max-width:var(--container);margin:0 auto;padding:1.5rem}
       header{display:flex;align-items:center;justify-content:space-between;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,0.05);margin-bottom:2rem}
       .brand a{color:var(--accent);text-decoration:none;font-weight:700;font-size:1.25rem}
-      h1{margin:0;color:#fff;font-size:1.75rem}
+      .page-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,0.05);margin-bottom:2rem;gap:1rem}
+      .page-header h1{margin:0;color:#fff;font-size:1.5rem;flex:1;text-align:center}
       .btn{padding:0.6rem 1rem;border-radius:8px;border:0;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:all 0.3s}
       .btn:disabled{opacity:0.5;cursor:not-allowed}
       .btn-trial{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#081018}
@@ -78,7 +79,7 @@
       .number-btn.zero.selected{background:var(--accent);color:#081018}
       
       /* Sidebar */
-      .sidebar{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.5rem;height:fit-content;sticky:top:1rem}
+      .sidebar{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.5rem;height:fit-content;position: sticky;top:1rem}
       .sidebar-title{color:var(--accent);font-weight:bold;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:0.75rem}
       .bet-item{padding:0.75rem;background:rgba(0,0,0,0.2);border-radius:6px;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;font-size:0.9rem}
       .bet-item-number{color:var(--accent);font-weight:bold}
@@ -110,13 +111,18 @@
   </head>
   <body>
     <div class="wrap">
-      <header>
-        <div class="brand"><a href="/">SKYSINO</a></div>
-        <h1>🎡 Roulette Classique</h1>
-      </header>
+      <div class="page-header" style="display:flex;align-items:center;justify-content:space-between">
+        <div class="brand"><a href="/index.html">SKYSINO</a></div>
+        <h1>Roulette Classique</h1>
+        <div id="nav-auth" style="display:flex;gap:1rem;align-items:center">
+          <span id="nav-user" style="color:var(--muted);display:none;white-space:nowrap">Connecté: <strong id="nav-username"></strong></span>
+          <a href="/app.html" class="btn btn-outline" id="nav-login-btn" style="text-decoration:none;padding:0.5rem 1rem;font-size:0.9rem">Connexion</a>
+          <button class="btn btn-outline" id="nav-logout-btn" onclick="logoutGame()" style="display:none;padding:0.5rem 1rem;font-size:0.9rem">D&eacute;connexion</button>
+        </div>
+      </div>
 
       <div class="alert">
-        ℹ️ Mode démo gratuit — Numéro gagne 35x votre mise, Zones (rouge, noir, pair, impair) gagnent 2x!
+        Info: Mode demo gratuit - Numero gagne 35x votre mise, Zones (rouge, noir, pair, impair) gagnent 2x!
       </div>
 
       <div class="main-container">
@@ -130,7 +136,7 @@
 
           <!-- Result -->
           <div class="result-display" id="resultDisplay">
-            <div class="result-text">Résultat du tour</div>
+            <div class="result-text">R&eacute;sultat du tour</div>
             <div class="result-number" id="resultNumber">0</div>
             <div class="result-text" id="resultText"></div>
             <div class="result-amount" id="resultAmount"></div>
@@ -145,12 +151,12 @@
             <div style="margin:1rem 0">
               <div style="color:var(--muted);font-size:0.9rem;margin-bottom:0.5rem">Zones (gain 2x):</div>
               <div class="betting-zones">
-                <button class="zone-btn red" onclick="toggleZone('red')">🔴 Rouge</button>
-                <button class="zone-btn black" onclick="toggleZone('black')">⬛ Noir</button>
-                <button class="zone-btn" onclick="toggleZone('even')">2️⃣ Pair</button>
-                <button class="zone-btn" onclick="toggleZone('odd')">1️⃣ Impair</button>
-                <button class="zone-btn" onclick="toggleZone('1-18')">1️⃣8️⃣ 1-18</button>
-                <button class="zone-btn" onclick="toggleZone('19-36')">1️⃣9️⃣ 19-36</button>
+                <button class="zone-btn red" onclick="toggleZone('red')">Rouge</button>
+                <button class="zone-btn black" onclick="toggleZone('black')">Noir</button>
+                <button class="zone-btn" onclick="toggleZone('even')">Pair</button>
+                <button class="zone-btn" onclick="toggleZone('odd')">Impair</button>
+                <button class="zone-btn" onclick="toggleZone('1-18')">1-18</button>
+                <button class="zone-btn" onclick="toggleZone('19-36')">19-36</button>
               </div>
             </div>
             
@@ -165,11 +171,11 @@
           <div class="info">
             <div class="info-row">
               <span class="info-label">Solde</span>
-              <span class="info-value" id="balance">1000 ✪</span>
+              <span class="info-value" id="balance">1000 *</span>
             </div>
             <div class="info-row">
-              <span class="info-label">Total parié</span>
-              <span class="info-value" id="totalBet">0 ✪</span>
+              <span class="info-label">Total pari&eacute;</span>
+              <span class="info-value" id="totalBet">0 *</span>
             </div>
           </div>
 
@@ -188,14 +194,14 @@
           </div>
           <div class="total-bet">
             <div class="total-bet-label">Mise Totale</div>
-            <div class="total-bet-amount" id="totalBetSidebar">0 ✪</div>
+            <div class="total-bet-amount" id="totalBetSidebar">0 *</div>
           </div>
         </div>
       </div>
 
-      <footer>
+      <div class="page-footer">
         © SKYSINO — Environnement de développement. Contenu fictif.
-      </footer>
+      </div>
     </div>
 
     <script>
@@ -262,6 +268,9 @@
         isSpinning: false
       };
 
+      // keep track of current wheel rotation (degrees); prevents drift after multiple spins
+      let currentRotation = 0;
+
       function isRed(num) {
         return RED_NUMBERS.includes(num);
       }
@@ -282,6 +291,7 @@
       }
 
       function toggleZone(zone) {
+        if (game.isSpinning) return; // ignore input during spin
         const betAmount = parseInt(document.getElementById('betAmount').value) || 0;
         
         if (!betAmount || betAmount <= 0) {
@@ -305,6 +315,7 @@
       }
 
       function toggleBet(number) {
+        if (game.isSpinning) return; // ignore input during spin
         const betAmount = parseInt(document.getElementById('betAmount').value) || 0;
         
         if (!betAmount || betAmount <= 0) {
@@ -377,23 +388,23 @@
               let label = key;
               if (key.startsWith('zone-')) {
                 const zone = key.replace('zone-', '');
-                label = zone === 'red' ? '🔴 Rouge' : zone === 'black' ? '⬛ Noir' : zone === 'even' ? '2️⃣ Pair' : zone === 'odd' ? '1️⃣ Impair' : zone === '1-18' ? '1️⃣8️⃣ 1-18' : '1️⃣9️⃣ 19-36';
+                label = zone === 'red' ? 'Rouge' : zone === 'black' ? 'Noir' : zone === 'even' ? 'Pair' : zone === 'odd' ? 'Impair' : zone === '1-18' ? '1-18' : '19-36';
               } else {
                 label = `N°${key}`;
               }
               return `
                 <div class="bet-item">
                   <span><span class="bet-item-number">${label}</span></span>
-                  <span class="bet-item-amount">${amount} ✪</span>
-                  <button class="bet-remove" onclick="removeBet('${key}')">✕</button>
+                  <span class="bet-item-amount">${amount} *</span>
+                  <button class="bet-remove" onclick="removeBet('${key}')">x</button>
                 </div>
               `;
             }).join('');
         }
 
         const total = calculateTotalBet();
-        document.getElementById('totalBet').textContent = total + ' ✪';
-        document.getElementById('totalBetSidebar').textContent = total + ' ✪';
+        document.getElementById('totalBet').textContent = total + ' *';
+        document.getElementById('totalBetSidebar').textContent = total + ' *';
       }
 
       function removeBet(key) {
@@ -410,6 +421,7 @@
       }
 
       function spinWheel() {
+        if (game.isSpinning) return; // avoid re-entrant spins
         const totalBet = calculateTotalBet();
         
         if (totalBet === 0) {
@@ -433,12 +445,15 @@
 
         // determine the index of the winning number in the wheel order
         const winningIndex = WHEEL_ORDER.indexOf(winningNumber);
-        const targetAngle = (winningIndex >= 0 ? (winningIndex * SECTION_ANGLE) + (SECTION_ANGLE / 2) : (winningNumber * SECTION_ANGLE) + (SECTION_ANGLE / 2));
-        // rotate so that the targetAngle aligns with the pointer at 0deg
-        const randomDegree = (rotations * 360) + (360 - targetAngle);
+        const targetAngle = (winningIndex * SECTION_ANGLE) + (SECTION_ANGLE / 2);
+
+        // compute spin angle relative to currentRotation to avoid accumulated offset
+        const spinAngle = (rotations * 360) + (360 - (targetAngle % 360));
+        // update rotation but keep value within reasonable range to prevent overflow
+        currentRotation = (currentRotation + spinAngle) % 360;
 
         // apply transform; transition is set on the wheel element
-        wheel.style.transform = `rotate(${randomDegree}deg)`;
+        wheel.style.transform = `rotate(${currentRotation}deg)`;
 
         setTimeout(() => {
           showResult(winningNumber, totalBet);
@@ -492,12 +507,12 @@
 
         let message = 'Vous avez perdu!';
         if (winnings > 0) {
-          message = `${winningBets.join(', ')} gagnant! Vous avez gagné ${winnings} ✪!`;
+          message = `${winningBets.join(', ')} gagnant! Vous avez gagn&eacute; ${winnings} *!`;
         }
 
         document.getElementById('resultNumber').textContent = winningNumber;
         document.getElementById('resultText').textContent = message;
-        document.getElementById('resultAmount').textContent = winnings > 0 ? `+${winnings} ✪` : '0 ✪';
+        document.getElementById('resultAmount').textContent = winnings > 0 ? `+${winnings} *` : '0 *';
         document.getElementById('resultDisplay').classList.add('show');
         document.getElementById('balance').textContent = game.balance + ' ✪';
 
@@ -517,13 +532,50 @@
       }
 
       function goHome() {
-        window.location.href = '/';
+        window.location.href = '/index.html';
       }
 
-      // Initialize
-      initializeWheel();
-      initializeNumbers();
-      updateBetsDisplay();
+      function getToken() {
+        return localStorage.getItem('token');
+      }
+
+      async function checkAuth() {
+        const token = getToken();
+        const navUser = document.getElementById('nav-user');
+        const navLoginBtn = document.getElementById('nav-login-btn');
+        const navLogoutBtn = document.getElementById('nav-logout-btn');
+
+        if (token) {
+          navLoginBtn.style.display = 'none';
+          navLogoutBtn.style.display = 'block';
+          navUser.style.display = 'inline';
+          try {
+            const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+            if (res.ok) {
+              const data = await res.json();
+              document.getElementById('nav-username').textContent = data.username;
+              game.balance = data.balance;
+              document.getElementById('balance').textContent = game.balance + ' *';
+            } else {
+              logout();
+            }
+          } catch (e) {
+            logout();
+          }
+        } else {
+          navLoginBtn.style.display = 'block';
+          navLogoutBtn.style.display = 'none';
+          navUser.style.display = 'none';
+        }
+      }
+
+      function logoutGame() {
+        localStorage.removeItem('token');
+        checkAuth();
+      }
+
+      // Check auth on page load
+      window.addEventListener('load', checkAuth);
     </script>
   </body>
 </html>

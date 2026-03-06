@@ -73,13 +73,18 @@
   </head>
   <body>
     <div class="wrap">
-      <header>
-        <div class="brand"><a href="/">SKYSINO</a></div>
-        <h1>🎰 Machines à Sous Classiques</h1>
+      <header style="display:flex;align-items:center;justify-content:space-between">
+        <div class="brand"><a href="/index.html">SKYSINO</a></div>
+        <h1>Machines a Sous Classiques</h1>
+        <div id="nav-auth" style="display:flex;gap:1rem;align-items:center">
+          <span id="nav-user" style="color:var(--muted);display:none;white-space:nowrap">Connecte: <strong id="nav-username"></strong></span>
+          <a href="/app.html" class="btn btn-outline" id="nav-login-btn" style="text-decoration:none;padding:0.5rem 1rem;font-size:0.9rem">Connexion</a>
+          <button class="btn btn-outline" id="nav-logout-btn" onclick="logoutGame()" style="display:none;padding:0.5rem 1rem;font-size:0.9rem">Deconnexion</button>
+        </div>
       </header>
 
       <div class="alert">
-        ℹ️ Mode démo gratuit — 3 symboles identiques = 10x votre mise!
+        ℹ️ Mode démo gratuit — 3 symboles identiques = 7-30x votre mise!
       </div>
 
       <div class="machine">
@@ -136,27 +141,27 @@
           <h4>Table des Gains</h4>
           <div class="payout-row">
             <span class="payout-symbol">3x 🍒</span>
-            <span class="payout-amount">10x mise</span>
+            <span class="payout-amount">7x mise</span>
           </div>
           <div class="payout-row">
             <span class="payout-symbol">3x 🍋</span>
-            <span class="payout-amount">10x mise</span>
+            <span class="payout-amount">7x mise</span>
           </div>
           <div class="payout-row">
             <span class="payout-symbol">3x 🔔</span>
-            <span class="payout-amount">15x mise</span>
+            <span class="payout-amount">10x mise</span>
           </div>
           <div class="payout-row">
             <span class="payout-symbol">3x ⭐</span>
-            <span class="payout-amount">20x mise</span>
+            <span class="payout-amount">12x mise</span>
           </div>
           <div class="payout-row">
             <span class="payout-symbol">3x 7️⃣</span>
-            <span class="payout-amount">50x mise (Jackpot!)</span>
+            <span class="payout-amount">30x mise (Jackpot!)</span>
           </div>
           <div class="payout-row">
             <span class="payout-symbol">2x Identiques</span>
-            <span class="payout-amount">2x mise</span>
+            <span class="payout-amount">1.5x mise</span>
           </div>
         </div>
       </div>
@@ -169,12 +174,12 @@
     <script>
       const SYMBOLS = ['🍒', '🍋', '🔔', '⭐', '7️⃣'];
       const PAYOUTS = {
-        '🍒🍒🍒': 10,
-        '🍋🍋🍋': 10,
-        '🔔🔔🔔': 15,
-        '⭐⭐⭐': 20,
-        '7️⃣7️⃣7️⃣': 50,
-        'pair': 2
+        '🍒🍒🍒': 7,
+        '🍋🍋🍋': 7,
+        '🔔🔔🔔': 10,
+        '⭐⭐⭐': 12,
+        '7️⃣7️⃣7️⃣': 30,
+        'pair': 1.5
       };
 
       let game = {
@@ -220,10 +225,36 @@
         
         setTimeout(() => {
           // Arrêter la rotation et afficher les résultats
-          const results = [];
-          for (let i = 0; i < 3; i++) {
-            const symbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-            results.push(symbol);
+          // Probabilité réduite de gagner (seulement 15% de chance globale)
+          const winChance = Math.random();
+          let results;
+
+          if (winChance < 0.15) {
+            // 15% de chance : générer une combinaison gagnante
+            const winningSymbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+            results = [winningSymbol, winningSymbol, winningSymbol];
+          } else {
+            // 85% de chance : générer une combinaison perdante
+            const results_temp = [];
+            for (let i = 0; i < 3; i++) {
+              results_temp.push(SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
+            }
+            // S'assurer que ce n'est pas une combinaison gagnante
+            if ((results_temp[0] === results_temp[1] && results_temp[1] === results_temp[2]) ||
+                (results_temp[0] === results_temp[1] || results_temp[1] === results_temp[2] || results_temp[0] === results_temp[2])) {
+              // Réessayer jusqu'à obtenir une vraie combinaison perdante
+              results = [];
+              for (let i = 0; i < 3; i++) {
+                results.push(SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
+              }
+              // Dernier recours : forcer une perte
+              if ((results[0] === results[1] && results[1] === results[2]) ||
+                  (results[0] === results[1] || results[1] === results[2] || results[0] === results[2])) {
+                results = ['🍒', '🍋', '🔔'];
+              }
+            } else {
+              results = results_temp;
+            }
           }
 
           game.result = results;
@@ -254,7 +285,7 @@
         } 
         // Vérifier 2 identiques
         else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
-          winnings = game.bet * 2;
+          winnings = game.bet * 1.5;
           message = 'Deux symboles identiques!';
           title = '✨ Petit Gain';
         }
@@ -354,8 +385,49 @@
         resultEl.classList.add('show', multiplier > 0 ? 'win' : '');
       }
 
-      function goHome() { window.location.href = '/'; }
+      function goHome() { window.location.href = '/index.html'; }
       function login() { window.location.href = '/app.html'; }
+
+      function getToken() {
+        return localStorage.getItem('token');
+      }
+
+      async function checkAuth() {
+        const token = getToken();
+        const navUser = document.getElementById('nav-user');
+        const navLoginBtn = document.getElementById('nav-login-btn');
+        const navLogoutBtn = document.getElementById('nav-logout-btn');
+
+        if (token) {
+          navLoginBtn.style.display = 'none';
+          navLogoutBtn.style.display = 'block';
+          navUser.style.display = 'inline';
+          try {
+            const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+            if (res.ok) {
+              const data = await res.json();
+              document.getElementById('nav-username').textContent = data.username;
+              game.balance = data.balance;
+              document.getElementById('balance').textContent = game.balance + ' *';
+            } else {
+              logoutGame();
+            }
+          } catch (e) {
+            logoutGame();
+          }
+        } else {
+          navLoginBtn.style.display = 'block';
+          navLogoutBtn.style.display = 'none';
+          navUser.style.display = 'none';
+        }
+      }
+
+      function logoutGame() {
+        localStorage.removeItem('token');
+        checkAuth();
+      }
+
+      window.addEventListener('load', checkAuth);
     </script>
   </body>
 </html>

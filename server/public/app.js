@@ -27,7 +27,8 @@ document.getElementById('btn-register').addEventListener('click', async () => {
   if (res.token) {
     localStorage.setItem('token', res.token);
     setMsg(msg, 'Registered.');
-    await loadMe();
+    // Redirect to homepage after registration
+    window.location.href = '/index.html';
   } else setMsg(msg, res.error || 'error', true);
 });
 
@@ -40,7 +41,8 @@ document.getElementById('btn-login').addEventListener('click', async () => {
   if (res.token) {
     localStorage.setItem('token', res.token);
     setMsg(msg, 'Logged in.');
-    await loadMe();
+    // Redirect to homepage after login
+    window.location.href = '/index.html';
   } else setMsg(msg, res.error || 'error', true);
 });
 

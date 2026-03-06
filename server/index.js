@@ -5,7 +5,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
-const { users } = require('./data');
+const connectDB = require('./db');
+const User = require('./userModel');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 const STARTING_BALANCE = 1000; // crédits de départ
@@ -16,6 +17,10 @@ app.use(bodyParser());
 
 // Serve static frontend
 app.use(express.static(path.join(__dirname, 'public')));
+
+connectDB().then(() => {
+  console.log('MongoDB connecté');
+});
 
 function generateToken(userId) {
   return jwt.sign({ sub: userId }, JWT_SECRET, { expiresIn: '7d' });
@@ -38,35 +43,32 @@ function authMiddleware(req, res, next) {
 
 // Register
 app.post('/api/register', async (req, res) => {
-  const { username, password } = req.body || {};
-  if (!username || !password) return res.status(400).json({ error: 'username and password required' });
-  // simple unique username check
-  for (const u of users.values()) {
-    if (u.username === username) return res.status(400).json({ error: 'username exists' });
-  }
-  const id = uuidv4();
+  const { username, password } = req.body;
+  if (!username || !password) return res.status(400).json({ error: 'Champs requis' });
+  const existing = await User.findOne({ username });
+  if (existing) return res.status(400).json({ error: 'Utilisateur déjà existant' });
   const hash = await bcrypt.hash(password, 10);
-  const user = { id, username, passwordHash: hash, balance: STARTING_BALANCE };
-  users.set(id, user);
-  const token = generateToken(id);
-  res.json({ token, user: { id: user.id, username: user.username, balance: user.balance } });
+  const user = await User.create({ username, password: hash });
+  const token = generateToken(user._id);
+  res.json({ token, username: user.username, balance: user.balance });
 });
 
 // Login
 app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body || {};
-  if (!username || !password) return res.status(400).json({ error: 'username and password required' });
-  const found = Array.from(users.values()).find(u => u.username === username);
-  if (!found) return res.status(400).json({ error: 'invalid credentials' });
-  const ok = await bcrypt.compare(password, found.passwordHash);
-  if (!ok) return res.status(400).json({ error: 'invalid credentials' });
-  const token = generateToken(found.id);
-  res.json({ token, user: { id: found.id, username: found.username, balance: found.balance } });
+  const { username, password } = req.body;
+  const user = await User.findOne({ username });
+  if (!user) return res.status(400).json({ error: 'Utilisateur inconnu' });
+  const valid = await bcrypt.compare(password, user.password);
+  if (!valid) return res.status(400).json({ error: 'Mot de passe incorrect' });
+  const token = generateToken(user._id);
+  res.json({ token, username: user.username, balance: user.balance });
 });
 
-app.get('/api/me', authMiddleware, (req, res) => {
-  const { id, username, balance } = req.user;
-  res.json({ id, username, balance });
+// Profil
+app.get('/api/me', authMiddleware, async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+  res.json({ username: user.username, balance: user.balance });
 });
 
 // Rouletter: bet on a number 0-36
