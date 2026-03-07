@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="utf-8" />
@@ -88,38 +88,29 @@
       </div>
 
       <div class="machine">
-        <!-- Slots -->
-        <div class="slots-display">
-          <div class="reel" id="reel1">🍒</div>
-          <div class="reel" id="reel2">🍒</div>
-          <div class="reel" id="reel3">🍒</div>
-        </div>
+        <!-- Top row: Info left + Slots right -->
+        <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;justify-content:center">
+          <!-- Info (left) -->
+          <div class="info-section" style="margin:0;min-width:220px;flex:0 0 auto">
+            <div class="info-row">
+              <span class="info-label">Solde</span>
+              <span class="info-value" id="balance">1000 🪙</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Dernière Mise</span>
+              <span class="info-value" id="lastBet">0 🪙</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Dernier Gain</span>
+              <span class="info-value" id="lastWin">0 🪙</span>
+            </div>
+          </div>
 
-        <!-- Info -->
-        <div class="info-section">
-          <div class="info-row">
-            <span class="info-label">Solde</span>
-            <span class="info-value" id="balance">1000 ✪</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Dernière Mise</span>
-            <span class="info-value" id="lastBet">0 ✪</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Dernier Gain</span>
-            <span class="info-value" id="lastWin">0 ✪</span>
-          </div>
-        </div>
-
-        <!-- Bet Section -->
-        <div class="bet-section" id="betSection">
-          <label>Placez votre mise:</label>
-          <input type="number" id="betInput" placeholder="Montant" min="1" value="50">
-          <div class="quick-buttons">
-            <button class="btn btn-outline" onclick="quickBet(10)">+10</button>
-            <button class="btn btn-outline" onclick="quickBet(25)">+25</button>
-            <button class="btn btn-outline" onclick="quickBet(50)">+50</button>
-            <button class="btn btn-outline" onclick="quickBet(100)">+100</button>
+          <!-- Slots -->
+          <div class="slots-display" style="margin:0;flex:1 1 auto">
+            <div class="reel" id="reel1">🍒</div>
+            <div class="reel" id="reel2">🍒</div>
+            <div class="reel" id="reel3">🍒</div>
           </div>
         </div>
 
@@ -127,6 +118,19 @@
         <div class="controls">
           <button class="btn btn-trial" onclick="spin()" id="spinBtn">Tourner (Entrée)</button>
           <button class="btn btn-outline" onclick="goHome()">Retour</button>
+        </div>
+
+        <!-- Bet Section -->
+        <div class="bet-section" id="betSection">
+          <label>Placez votre mise:</label>
+          <input type="number" id="betInput" placeholder="Montant" min="1" value="50" oninput="if(Number(this.value)>game.balance)this.value=game.balance;if(Number(this.value)<0)this.value=0">
+          <div class="quick-buttons">
+            <button class="btn btn-outline" onclick="quickBet(10)">+10</button>
+            <button class="btn btn-outline" onclick="quickBet(25)">+25</button>
+            <button class="btn btn-outline" onclick="quickBet(50)">+50</button>
+            <button class="btn btn-outline" onclick="quickBet(100)">+100</button>
+            <button class="btn btn-outline" onclick="document.getElementById('betInput').value=game.balance">Max</button>
+          </div>
         </div>
 
         <!-- Result -->
@@ -191,7 +195,7 @@
 
       function quickBet(amount) {
         const input = document.getElementById('betInput');
-        input.value = (parseInt(input.value) || 0) + amount;
+        input.value = Math.min(game.balance, Math.max(0, (parseInt(input.value) || 0) + amount));
       }
 
       function spin() {
@@ -225,36 +229,26 @@
         
         setTimeout(() => {
           // Arrêter la rotation et afficher les résultats
-          // Probabilité réduite de gagner (seulement 15% de chance globale)
+          // Probabilités: 8% triple, 17% paire, 75% perte
           const winChance = Math.random();
           let results;
 
-          if (winChance < 0.15) {
-            // 15% de chance : générer une combinaison gagnante
+          if (winChance < 0.08) {
+            // 8% de chance : trois identiques
             const winningSymbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
             results = [winningSymbol, winningSymbol, winningSymbol];
+          } else if (winChance < 0.25) {
+            // 17% de chance : paire
+            const pairSymbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+            const others = SYMBOLS.filter(s => s !== pairSymbol);
+            const oddSymbol = others[Math.floor(Math.random() * others.length)];
+            const pos = Math.floor(Math.random() * 3);
+            results = [pairSymbol, pairSymbol, pairSymbol];
+            results[pos] = oddSymbol;
           } else {
-            // 85% de chance : générer une combinaison perdante
-            const results_temp = [];
-            for (let i = 0; i < 3; i++) {
-              results_temp.push(SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
-            }
-            // S'assurer que ce n'est pas une combinaison gagnante
-            if ((results_temp[0] === results_temp[1] && results_temp[1] === results_temp[2]) ||
-                (results_temp[0] === results_temp[1] || results_temp[1] === results_temp[2] || results_temp[0] === results_temp[2])) {
-              // Réessayer jusqu'à obtenir une vraie combinaison perdante
-              results = [];
-              for (let i = 0; i < 3; i++) {
-                results.push(SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
-              }
-              // Dernier recours : forcer une perte
-              if ((results[0] === results[1] && results[1] === results[2]) ||
-                  (results[0] === results[1] || results[1] === results[2] || results[0] === results[2])) {
-                results = ['🍒', '🍋', '🔔'];
-              }
-            } else {
-              results = results_temp;
-            }
+            // 85% de chance : tous différents
+            const shuffled = [...SYMBOLS].sort(() => Math.random() - 0.5);
+            results = [shuffled[0], shuffled[1], shuffled[2]];
           }
 
           game.result = results;
@@ -292,14 +286,16 @@
 
         game.balance += winnings;
 
-        document.getElementById('lastBet').textContent = game.bet + ' ✪';
-        document.getElementById('lastWin').textContent = winnings + ' ✪';
-        document.getElementById('balance').textContent = game.balance + ' ✪';
+        document.getElementById('lastBet').textContent = game.bet + ' 🪙';
+        document.getElementById('lastWin').textContent = winnings + ' 🪙';
+        document.getElementById('balance').textContent = game.balance + ' 🪙';
 
         document.getElementById('resultTitle').textContent = title;
         document.getElementById('resultText').textContent = message;
-        document.getElementById('resultAmount').textContent = winnings > 0 ? `+${winnings} ✪` : '0 ✪';
+        document.getElementById('resultAmount').textContent = winnings > 0 ? `+${winnings} 🪙` : '0 🪙';
         document.getElementById('resultMessage').classList.add('show');
+
+        syncBalance();
 
         if (game.balance <= 0) {
           setTimeout(() => {
@@ -309,8 +305,21 @@
         }
       }
 
-      function goHome() {
+      async function goHome() {
+        await syncBalance();
         window.location.href = '/';
+      }
+
+      async function syncBalance() {
+        const token = getToken();
+        if (!token) return;
+        try {
+          await fetch(API_BASE + '/api/sync-balance', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ balance: game.balance })
+          });
+        } catch (e) { /* ignore */ }
       }
 
       // Keyboard support
@@ -388,7 +397,7 @@
         resultEl.classList.add('show', multiplier > 0 ? 'win' : '');
       }
 
-      function goHome() { window.location.href = '/index.html'; }
+      async function goHome() { await syncBalance(); window.location.href = '/index.html'; }
       function login() { window.location.href = '/app.html'; }
 
       function getToken() {
@@ -412,11 +421,11 @@
               document.getElementById('nav-username').textContent = data.username;
               game.balance = data.balance;
               document.getElementById('balance').textContent = game.balance + ' *';
-            } else {
+            } else if (res.status === 401 || res.status === 403) {
               logoutGame();
             }
           } catch (e) {
-            logoutGame();
+            // network error — don't logout
           }
         } else {
           navLoginBtn.style.display = 'block';

@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="utf-8" />
@@ -96,7 +96,7 @@
             <div style="margin-top:1rem">
               <a class="btn btn-trial" id="hero-btn" href="/app.html">Se connecter et jouer</a>
             </div>
-            <div style="margin-top:1.25rem" class="promo-carousel">Bonus: 1000 ✪ offerts à l'inscription</div>
+            <div style="margin-top:1.25rem" class="promo-carousel">Bonus: 1000 🪙 offerts à l'inscription</div>
           </div>
 
           <aside class="hero-right">
@@ -173,7 +173,7 @@
         <section class="promos">
           <div class="promo">
             <strong>Bonus de bienvenue (démo)</strong>
-            <div style="color:var(--muted);margin-top:.5rem">Recevez 1000 ✪ pour tester nos jeux. Offre uniquement sur l'environnement de développement.</div>
+            <div style="color:var(--muted);margin-top:.5rem">Recevez 1000 🪙 pour tester nos jeux. Offre uniquement sur l'environnement de développement.</div>
           </div>
           <div class="promo">
             <strong>Mode démo gratuit</strong>
@@ -233,13 +233,16 @@
         if (!token) return;
         try {
           const res = await fetch(API_BASE + '/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
-          if (!res.ok) { logoutHome(); return; }
+          if (!res.ok) {
+            if (res.status === 401 || res.status === 403) { logoutHome(); }
+            return;
+          }
           const data = await res.json();
           document.getElementById('nav-username').textContent = data.username;
-          document.getElementById('hero-balance').textContent = data.balance + ' ✪';
+          document.getElementById('hero-balance').textContent = data.balance + ' 🪙';
           document.getElementById('refresh-balance').style.display = 'inline-block';
         } catch (e) {
-          logoutHome();
+          // erreur réseau, ne pas déconnecter
         }
       }
 
@@ -261,6 +264,10 @@
 
       // Vérifier l'auth au chargement
       window.addEventListener('DOMContentLoaded', checkAuth);
+      // Refresh les données quand on revient sur la page (cache navigateur)
+      window.addEventListener('pageshow', function(e) {
+        if (e.persisted) checkAuth();
+      });
     </script>
   </body>
 </html>

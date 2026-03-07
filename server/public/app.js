@@ -54,6 +54,30 @@ document.getElementById('btn-logout').addEventListener('click', () => {
   location.reload();
 });
 
+document.getElementById('btn-set-jetons').addEventListener('click', async () => {
+  const amount = parseInt(document.getElementById('jetons-amount').value);
+  const msg = document.getElementById('jetons-msg');
+  if (isNaN(amount) || amount < 0) {
+    setMsg(msg, 'Montant invalide', true);
+    return;
+  }
+  try {
+    const res = await fetch(API_BASE + '/api/sync-balance', {
+      method: 'POST',
+      headers: tokenHeaders(),
+      body: JSON.stringify({ balance: amount })
+    });
+    if (res.ok) {
+      setMsg(msg, 'Jetons mis à jour: ' + amount);
+      await loadMe();
+    } else {
+      setMsg(msg, 'Erreur', true);
+    }
+  } catch (e) {
+    setMsg(msg, 'Erreur réseau', true);
+  }
+});
+
 document.getElementById('btn-roulette').addEventListener('click', async () => {
   const bet = document.getElementById('roulette-bet').value;
   const number = document.getElementById('roulette-number').value;

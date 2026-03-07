@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="utf-8" />
@@ -37,6 +37,15 @@
       .card{width:80px;height:120px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:bold;box-shadow:0 4px 12px rgba(0,0,0,0.3);transition:all 0.3s;border:2px solid rgba(0,0,0,0.1)}
       .card:hover{transform:translateY(-5px);box-shadow:0 8px 20px rgba(0,0,0,0.4);z-index:10}
       .card.hidden{background:#06213a;border:2px solid var(--accent);color:#fff;font-size:1.5rem;cursor:default}
+
+      /* Deal animation */
+      @keyframes dealCard{
+        0%{opacity:0;transform:translateY(-80px) rotateY(90deg) scale(0.5)}
+        60%{opacity:1;transform:translateY(5px) rotateY(-10deg) scale(1.02)}
+        100%{opacity:1;transform:translateY(0) rotateY(0deg) scale(1)}
+      }
+      .card.deal-anim{animation:dealCard 0.45s cubic-bezier(0.2,0.8,0.3,1) both}
+      .player-card.deal-anim{animation:dealCard 0.45s cubic-bezier(0.2,0.8,0.3,1) both}
       .card{flex-direction:column;padding:0.5rem;text-align:center}
       .card{perspective:900px}
       .card-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.45s cubic-bezier(0.2,0.8,0.2,1)}
@@ -187,11 +196,11 @@
           </div>
           <div class="info-row">
             <span class="info-label">Pot Total</span>
-            <span class="info-value pot" id="potTotal">0 ✪</span>
+            <span class="info-value pot" id="potTotal">0 🪙</span>
           </div>
           <div class="info-row">
             <span class="info-label">Mise à Suivre</span>
-            <span class="info-value" id="currentBet">0 ✪</span>
+            <span class="info-value" id="currentBet">0 🪙</span>
           </div>
         </div>
 
@@ -201,11 +210,16 @@
           <div class="bet-input-group">
             <input type="range" id="betSlider" min="0" max="500" value="0" oninput="updateBetAmount()">
           </div>
-          <input type="number" id="betAmount" placeholder="Montant" min="0" value="0" onchange="updateBetSlider()">
-          <div style="display:flex;gap:0.5rem;margin-bottom:1rem">
+          <input type="number" id="betAmount" placeholder="Montant" min="0" value="0" onchange="updateBetSlider()" oninput="var max=gameState.players[0].stack+gameState.players[0].bet;if(Number(this.value)>max)this.value=max;if(Number(this.value)<0)this.value=0;updateBetSlider()">
+          <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap">
+            <button class="btn btn-outline" onclick="quickBet(-1000)">-1000</button>
+            <button class="btn btn-outline" onclick="quickBet(-100)">-100</button>
+            <button class="btn btn-outline" onclick="quickBet(-50)">-50</button>
+            <button class="btn btn-outline" onclick="quickBet(-10)">-10</button>
             <button class="btn btn-outline" onclick="quickBet(10)">+10</button>
             <button class="btn btn-outline" onclick="quickBet(50)">+50</button>
             <button class="btn btn-outline" onclick="quickBet(100)">+100</button>
+            <button class="btn btn-outline" onclick="quickBet(1000)">+1000</button>
             <button class="btn btn-outline" onclick="setBetToMax()">Max</button>
           </div>
         </div>
@@ -218,7 +232,7 @@
         </div>
 
         <!-- Next Hand Button -->
-        <div style="text-align:center;margin-top:2rem" id="nextHandDiv" style="display:none">
+        <div style="text-align:center;margin-top:2rem;display:none" id="nextHandDiv">
           <button class="btn btn-trial" onclick="startNewHand()">Nouvelle Main</button>
           <button class="btn btn-outline" onclick="goHome()" style="margin-left:1rem">Retour à l'accueil</button>
         </div>
@@ -305,12 +319,13 @@
       }
 
       function startNewHand() {
-        // Check if any player is out
-        const activePlayers = gameState.players.filter(p => p.stack > 0);
-        if (activePlayers.length === 1) {
-          showResult('Game Over!', 'Vous êtes le seul joueur restant!');
-          return;
-        }
+        // Close modal if open
+        document.getElementById('resultModal').classList.remove('show');
+
+        // Redistribute stacks for eliminated players so the game can continue
+        gameState.players.forEach(p => {
+          if (p.stack <= 0) p.stack = gameState.bigBlind * 10;
+        });
 
         // Reset state
         gameState.deck = createDeck();
@@ -344,13 +359,12 @@
 
         updateDisplay();
 
-        // Animate player's cards flipping in for a casino-like deal
+        // Animate all player cards dealing in with staggered delay
         setTimeout(() => {
-          const playerCards = Array.from(document.querySelectorAll('#p1-cards .card'));
-          playerCards.forEach((el, idx) => {
-            // momentarily show back then flip to front
-            el.classList.add('flipped');
-            setTimeout(() => el.classList.remove('flipped'), 200 + idx * 120);
+          const allPlayerCards = Array.from(document.querySelectorAll('.player-cards .player-card, .player-cards .card'));
+          allPlayerCards.forEach((el, idx) => {
+            el.style.animationDelay = (idx * 0.12) + 's';
+            el.classList.add('deal-anim');
           });
         }, 80);
         document.getElementById('betControl').style.display = 'block';
@@ -370,6 +384,13 @@
 
         if (player.isHuman) {
           document.getElementById('actions').classList.remove('waiting');
+          // Auto-check/call après 15s si le joueur n'agit pas
+          if (gameState.actionTimeout) { clearTimeout(gameState.actionTimeout); gameState.actionTimeout = null; }
+          gameState.actionTimeout = setTimeout(() => {
+            if (gameState.gameInProgress && gameState.players[gameState.currentPlayerIdx].isHuman) {
+              checkOrCall();
+            }
+          }, 15000);
           return;
         }
 
@@ -478,6 +499,7 @@
 
         gameState.gameInProgress = false;
         updateDisplay();
+        syncBalance();
 
         // reveal opponents' cards with a flip animation
         setTimeout(() => {
@@ -513,7 +535,7 @@
           detailsEl.appendChild(line);
         });
 
-        showResult('Tour Terminé!', `${winner.name} remporte ${gameState.pot} ✪`, detailsEl.innerHTML);
+        showResult('Tour Terminé!', `${winner.name} remporte ${gameState.pot} 🪙`, detailsEl.innerHTML);
       }
 
       function checkOrCall() {
@@ -575,7 +597,8 @@
           activePlayers[0].stack += gameState.pot;
           gameState.gameInProgress = false;
           updateDisplay();
-          showResult('Vous vous êtes couché', `${activePlayers[0].name} remporte ${gameState.pot} ✪`);
+          syncBalance();
+          showResult('Vous vous êtes couché', `${activePlayers[0].name} remporte ${gameState.pot} 🪙`);
         } else {
           updateDisplay();
           document.getElementById('actions').classList.add('waiting');
@@ -585,7 +608,8 @@
 
       function quickBet(amount) {
         const current = Number(document.getElementById('betAmount').value) || 0;
-        document.getElementById('betAmount').value = current + amount;
+        const max = gameState.players[0].stack + gameState.players[0].bet;
+        document.getElementById('betAmount').value = Math.min(max, Math.max(0, current + amount));
         updateBetSlider();
       }
 
@@ -618,7 +642,7 @@
           const cardsEl = document.getElementById(`p${i + 1}-cards`);
 
           stackEl.textContent = `Jetons: ${p.stack}`;
-          statusEl.innerHTML = `Mise: ${p.bet} ✪${p.folded ? ' <strong>(Couché)</strong>' : ''}`;
+          statusEl.innerHTML = `Mise: ${p.bet} 🪙${p.folded ? ' <strong>(Couché)</strong>' : ''}`;
 
           if (gameState.gameInProgress && i === gameState.currentPlayerIdx && !p.folded) {
             playerEl.classList.add('current-turn');
@@ -650,6 +674,15 @@
         }
         communityEl.innerHTML = communityHTML;
 
+        // Animate community cards
+        const comCards = Array.from(communityEl.querySelectorAll('.card:not(.hidden)'));
+        comCards.forEach((el, idx) => {
+          if (!el.classList.contains('deal-anim')) {
+            el.style.animationDelay = (idx * 0.15) + 's';
+            el.classList.add('deal-anim');
+          }
+        });
+
         // Game info
         document.getElementById('gamePhase').textContent = {
           'preflop': 'Pré-flop',
@@ -659,8 +692,8 @@
           'showdown': 'Abattage'
         }[gameState.phase];
 
-        document.getElementById('potTotal').textContent = gameState.pot + ' ✪';
-        document.getElementById('currentBet').textContent = gameState.currentBet + ' ✪';
+        document.getElementById('potTotal').textContent = gameState.pot + ' 🪙';
+        document.getElementById('currentBet').textContent = gameState.currentBet + ' 🪙';
 
         // Bet control max
         const slider = document.getElementById('betSlider');
@@ -684,7 +717,21 @@
         document.getElementById('resultModal').classList.add('show');
       }
 
-      function goHome() {
+      async function syncBalance() {
+        const token = getToken();
+        if (!token || !gameState) return;
+        try {
+          const playerStack = gameState.players[0].stack;
+          await fetch(API_BASE + '/api/sync-balance', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ balance: playerStack })
+          });
+        } catch (e) { /* ignore */ }
+      }
+
+      async function goHome() {
+        await syncBalance();
         window.location.href = '/index.html';
       }
 
@@ -709,11 +756,11 @@
               document.getElementById('nav-username').textContent = data.username;
               gameState.balance = data.balance;
               document.getElementById('playerBalance').textContent = gameState.balance + ' *';
-            } else {
+            } else if (res.status === 401 || res.status === 403) {
               logoutGame();
             }
           } catch (e) {
-            logoutGame();
+            // erreur réseau, ne pas déconnecter
           }
         } else {
           navLoginBtn.style.display = 'block';

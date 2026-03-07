@@ -75,6 +75,16 @@ app.get('/api/me', authMiddleware, (req, res) => {
   res.json({ username: req.user.username, balance: req.user.balance });
 });
 
+// Sync balance from client-side games
+app.post('/api/sync-balance', authMiddleware, (req, res) => {
+  const { balance } = req.body || {};
+  if (typeof balance !== 'number' || !Number.isFinite(balance) || balance < 0) {
+    return res.status(400).json({ error: 'invalid balance' });
+  }
+  req.user.balance = balance;
+  res.json({ balance: req.user.balance });
+});
+
 // Rouletter: bet on a number 0-36
 app.post('/api/games/roulette', authMiddleware, (req, res) => {
   const { bet, number } = req.body || {};
