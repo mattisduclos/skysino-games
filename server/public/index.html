@@ -205,6 +205,9 @@
     </div>
 
     <script>
+      // Auto-detect: si Live Server (5500), appeler Express sur le port 3000
+      const API_BASE = location.port === '3000' ? '' : 'http://localhost:3000';
+
       function getToken() {
         return localStorage.getItem('token');
       }
@@ -229,7 +232,7 @@
         const token = getToken();
         if (!token) return;
         try {
-          const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+          const res = await fetch(API_BASE + '/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
           if (!res.ok) { logoutHome(); return; }
           const data = await res.json();
           document.getElementById('nav-username').textContent = data.username;

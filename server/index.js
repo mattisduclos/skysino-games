@@ -5,22 +5,26 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
-const connectDB = require('./db');
-const User = require('./userModel');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 const STARTING_BALANCE = 1000; // crédits de départ
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser());
 
 // Serve static frontend
 app.use(express.static(path.join(__dirname, 'public')));
 
-connectDB().then(() => {
-  console.log('MongoDB connecté');
-});
+// ——— Stockage en mémoire (pas de MongoDB) ———
+const users = new Map(); // id -> { _id, username, password, balance }
+
+function findUserByUsername(username) {
+  for (const u of users.values()) {
+    if (u.username === username) return u;
+  }
+  return null;
+}
 
 function generateToken(userId) {
   return jwt.sign({ sub: userId }, JWT_SECRET, { expiresIn: '7d' });
@@ -45,18 +49,20 @@ function authMiddleware(req, res, next) {
 app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ error: 'Champs requis' });
-  const existing = await User.findOne({ username });
+  const existing = findUserByUsername(username);
   if (existing) return res.status(400).json({ error: 'Utilisateur déjà existant' });
   const hash = await bcrypt.hash(password, 10);
-  const user = await User.create({ username, password: hash });
-  const token = generateToken(user._id);
+  const id = uuidv4();
+  const user = { _id: id, username, password: hash, balance: STARTING_BALANCE };
+  users.set(id, user);
+  const token = generateToken(id);
   res.json({ token, username: user.username, balance: user.balance });
 });
 
 // Login
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
-  const user = await User.findOne({ username });
+  const user = findUserByUsername(username);
   if (!user) return res.status(400).json({ error: 'Utilisateur inconnu' });
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) return res.status(400).json({ error: 'Mot de passe incorrect' });
@@ -65,10 +71,8 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Profil
-app.get('/api/me', authMiddleware, async (req, res) => {
-  const user = await User.findById(req.user._id);
-  if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
-  res.json({ username: user.username, balance: user.balance });
+app.get('/api/me', authMiddleware, (req, res) => {
+  res.json({ username: req.user.username, balance: req.user.balance });
 });
 
 // Rouletter: bet on a number 0-36

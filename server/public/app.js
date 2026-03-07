@@ -1,9 +1,12 @@
+// Auto-detect: si Live Server (5500), appeler Express sur le port 3000
+const API_BASE = location.port === '3000' ? '' : 'http://localhost:3000';
+
 const API = {
-  register: '/api/register',
-  login: '/api/login',
-  me: '/api/me',
-  roulette: '/api/games/roulette',
-  slots: '/api/games/slots'
+  register: API_BASE + '/api/register',
+  login: API_BASE + '/api/login',
+  me: API_BASE + '/api/me',
+  roulette: API_BASE + '/api/games/roulette',
+  slots: API_BASE + '/api/games/slots'
 };
 
 function setMsg(el, msg, err) { el.textContent = msg; el.style.color = err ? 'crimson' : 'initial'; }

@@ -205,6 +205,9 @@
     </div>
 
     <script>
+      // Auto-detect: si Live Server (5500), appeler Express sur le port 3000
+      const API_BASE = location.port === '3000' ? '' : 'http://localhost:3000';
+
       // Roulette numbers: Red, Black, Green
       const RED_NUMBERS = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
       const BLACK_NUMBERS = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35];
@@ -550,7 +553,7 @@
           navLogoutBtn.style.display = 'block';
           navUser.style.display = 'inline';
           try {
-            const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+            const res = await fetch(API_BASE + '/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
             if (res.ok) {
               const data = await res.json();
               document.getElementById('nav-username').textContent = data.username;
@@ -575,7 +578,11 @@
       }
 
       // Check auth on page load
-      window.addEventListener('load', checkAuth);
+      window.addEventListener('load', () => {
+        initializeWheel();
+        initializeNumbers();
+        checkAuth();
+      });
     </script>
   </body>
 </html>

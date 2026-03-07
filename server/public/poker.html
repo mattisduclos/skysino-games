@@ -242,6 +242,9 @@
     </div>
 
     <script>
+      // Auto-detect: si Live Server (5500), appeler Express sur le port 3000
+      const API_BASE = location.port === '3000' ? '' : 'http://localhost:3000';
+
       const SUITS = ['♠', '♥', '♦', '♣'];
       const RANKS = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'];
       const RANK_VALUES = { 'A': 14, 'K': 13, 'Q': 12, 'J': 11, '10': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2 };
@@ -700,7 +703,7 @@
           navLogoutBtn.style.display = 'block';
           navUser.style.display = 'inline';
           try {
-            const res = await fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+            const res = await fetch(API_BASE + '/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
             if (res.ok) {
               const data = await res.json();
               document.getElementById('nav-username').textContent = data.username;
