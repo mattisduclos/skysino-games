@@ -182,6 +182,7 @@
           <button class="btn btn-trial" onclick="doSplit()" id="splitBtn" style="display:none">Split</button>
           <button class="btn btn-outline" onclick="newGame()">Nouvelle Main</button>
         </div>
+        <div id="splitHint" style="display:none;text-align:center;color:var(--muted);font-size:0.9rem;margin-top:0.6rem"></div>
       </div>
 
       <footer>
@@ -286,6 +287,44 @@
         return score;
       }
 
+      function getSplitGroup(card) {
+        if (!card) return '';
+        return ['10', 'J', 'Q', 'K'].includes(card.rank) ? '10' : card.rank;
+      }
+
+      function canOfferSplit() {
+        if (game.isSplit || game.phase !== 'playing' || game.playerHand.length !== 2) return false;
+        return getSplitGroup(game.playerHand[0]) === getSplitGroup(game.playerHand[1]);
+      }
+
+      function canAffordSplit() {
+        return game.balance >= game.bet;
+      }
+
+      function updateSplitButton() {
+        const splitBtn = document.getElementById('splitBtn');
+        const splitHint = document.getElementById('splitHint');
+        if (!canOfferSplit()) {
+          splitBtn.style.display = 'none';
+          splitBtn.disabled = false;
+          splitBtn.title = '';
+          splitHint.style.display = 'none';
+          splitHint.textContent = '';
+          return;
+        }
+
+        splitBtn.style.display = '';
+        splitBtn.disabled = !canAffordSplit();
+        splitBtn.title = splitBtn.disabled ? 'Jetons insuffisants pour split' : '';
+        if (splitBtn.disabled) {
+          splitHint.style.display = '';
+          splitHint.textContent = `Vous avez une paire, mais votre solde (${game.balance} 🪙) est inférieur à la mise requise pour split (${game.bet} 🪙).`;
+        } else {
+          splitHint.style.display = 'none';
+          splitHint.textContent = '';
+        }
+      }
+
       function quickBet(amount) {
         const input = document.getElementById('betInput');
         input.value = Math.min(game.balance, Math.max(0, (parseInt(input.value) || 0) + amount));
@@ -342,12 +381,7 @@
           endGame('blackjack', 'Blackjack! Gain x2.5!', game.bet * 2.5);
         }
 
-        // Show split button if eligible
-        if (game.playerHand.length === 2 && game.playerHand[0].rank === game.playerHand[1].rank && game.balance >= game.bet) {
-          document.getElementById('splitBtn').style.display = '';
-        } else {
-          document.getElementById('splitBtn').style.display = 'none';
-        }
+        updateSplitButton();
       }
 
       function hit() {
@@ -374,9 +408,7 @@
       }
 
       function doSplit() {
-        if (game.isSplit || game.playerHand.length !== 2
-            || game.playerHand[0].rank !== game.playerHand[1].rank
-            || game.balance < game.bet) return;
+        if (!canOfferSplit() || !canAffordSplit()) return;
 
         game.isSplit = true;
         game.activeHand = 0;
@@ -574,6 +606,8 @@
         // Update balance and bet display
         document.getElementById('balanceDisplay').textContent = game.balance + ' 🪙';
         document.getElementById('betDisplay').textContent = (game.isSplit ? game.bet + game.splitBet : game.bet) + ' 🪙';
+
+        updateSplitButton();
       }
 
       function newGame() {
