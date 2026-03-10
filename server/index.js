@@ -13,6 +13,17 @@ const app = express();
 app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser());
 
+// Dev safety: avoid stale frontend files across machines/browser sessions.
+app.use((req, res, next) => {
+  if (/(\.html|\.css|\.js)$/i.test(req.path)) {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+  }
+  next();
+});
+
 // Serve static frontend
 app.use(express.static(path.join(__dirname, 'public')));
 
