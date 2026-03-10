@@ -66,7 +66,7 @@
     <div class="wrap">
       <header class="site-top">
         <div class="brand">
-          <a href="/">SKYSINO</a>
+          <a href="/" id="brand-secret">SKYSINO</a>
         </div>
 
         <nav class="main">
@@ -77,7 +77,7 @@
 
         <div class="nav-right">
           <span id="nav-login-group">
-            <a class="btn btn-outline" href="/app.html">Se connecter</a>
+            <a class="btn btn-outline" href="/app.html">Créer un compte / Se connecter</a>
           </span>
           <span id="nav-user-group" style="display:none;color:var(--muted);display:flex;gap:1rem;align-items:center">
             <span>Connecté: <strong id="nav-username"></strong></span>
@@ -91,10 +91,10 @@
         <section class="hero">
           <div>
             <div class="kicker">NOUVEAU</div>
-            <h2>Jouez à nos tables et machines</h2>
-            <p class="lead">Testez nos jeux de casino en mode démo ou connectez-vous pour jouer avec votre compte personnel et vos vraies mises.</p>
+            <h2>Bienvenue sur Skysino</h2>
+            <p class="lead">Créez votre compte puis profitez de nos jeux avec votre solde personnel.</p>
             <div style="margin-top:1rem">
-              <a class="btn btn-trial" id="hero-btn" href="/app.html">Se connecter et jouer</a>
+              <button class="btn btn-trial" id="hero-btn" onclick="claimRecoveryCredits()">+100 credits (solde 0)</button>
             </div>
             <div style="margin-top:1.25rem" class="promo-carousel">Bonus: 1000 🪙 offerts à l'inscription</div>
           </div>
@@ -112,7 +112,7 @@
         <section id="jeux" class="games-section">
           <h3 style="margin-top:2rem;margin-bottom:1rem">Jeux disponibles</h3>
 
-          <!-- Poker Demo -->
+          <!-- Poker -->
           <div class="game-section">
             <div>
               <img class="game-img" src="/assets/poker.png" alt="Poker Texas Hold'em" />
@@ -126,7 +126,7 @@
             </div>
           </div>
 
-          <!-- Roulette Demo -->
+          <!-- Roulette -->
           <div class="game-section">
             <div>
               <img class="game-img" src="/assets/roulette.png" alt="Roulette Européenne" />
@@ -140,7 +140,7 @@
             </div>
           </div>
 
-          <!-- Slots Demo -->
+          <!-- Slots -->
           <div class="game-section">
             <div>
               <img class="game-img" src="/assets/slot.png" alt="Machines à sous" />
@@ -154,7 +154,7 @@
             </div>
           </div>
 
-          <!-- Blackjack Demo -->
+          <!-- Blackjack -->
           <div class="game-section">
             <div>
               <img class="game-img" src="/assets/blackjack.png" alt="Blackjack" />
@@ -172,26 +172,22 @@
         <!-- PROMOS -->
         <section class="promos">
           <div class="promo">
-            <strong>Bonus de bienvenue (démo)</strong>
-            <div style="color:var(--muted);margin-top:.5rem">Recevez 1000 🪙 pour tester nos jeux. Offre uniquement sur l'environnement de développement.</div>
+            <strong>Bonus de bienvenue</strong>
+            <div style="color:var(--muted);margin-top:.5rem">Recevez 1000 🪙 à la création de votre compte.</div>
           </div>
           <div class="promo">
-            <strong>Mode démo gratuit</strong>
-            <div style="color:var(--muted);margin-top:.5rem">Testez tous les jeux en mode démo sans créer de compte.</div>
+            <strong>Accès sécurisé</strong>
+            <div style="color:var(--muted);margin-top:.5rem">Un compte est requis pour accéder à l'ensemble de la plateforme.</div>
           </div>
         </section>
 
         <!-- HOWTO -->
         <section id="howto" style="margin-top:2rem">
           <h3>Comment démarrer</h3>
-          <p style="color:var(--muted)">Vous avez deux options :</p>
           <div style="margin-top:1rem">
-            <strong style="color:#fff">Option 1 : Mode démo (sans compte)</strong>
-            <p style="color:var(--muted)">Cliquez sur n'importe quel bouton "Jouer" ci-dessus pour accéder à la démo gratuite.</p>
-            
-            <strong style="color:#fff;margin-top:1rem;display:block">Option 2 : Créer un compte</strong>
+            <strong style="color:#fff">Créer un compte</strong>
             <p style="color:var(--muted)">
-              1. Cliquez sur "Se connecter et jouer" en haut<br>
+              1. Cliquez en haut à droite de l'accueil sur "Créer un compte / Se connecter"<br>
               2. Inscrivez-vous avec un nom d'utilisateur et mot de passe<br>
               3. Accédez aux jeux authentifiés avec votre solde personnel
             </p>
@@ -246,14 +242,32 @@
         }
       }
 
-      function goToGame(game) {
+      async function claimRecoveryCredits() {
         const token = getToken();
-        if (token) {
-          // Connecté : aller à la page authentifiée
-          window.location.href = '/' + game + '.html';
-        } else {
-          // Pas connecté : aller à la démo
-          window.location.href = '/' + game + '-demo.html';
+        if (!token) {
+          alert('Connectez-vous d\'abord (triple-clic sur SKYSINO).');
+          return;
+        }
+
+        try {
+          const res = await fetch(API_BASE + '/api/bonus/recovery', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            const msg = data.error || 'Bonus indisponible';
+            alert(msg);
+            updateBalance();
+            return;
+          }
+
+          alert('Bonus recu: +100 credits');
+          document.getElementById('hero-balance').textContent = data.balance + ' 🪙';
+          updateBalance();
+        } catch (e) {
+          alert('Erreur reseau, reessayez.');
         }
       }
 
@@ -262,8 +276,39 @@
         checkAuth();
       }
 
+      let secretClickCount = 0;
+      let secretClickResetTimer = null;
+      const SECRET_CLICK_WINDOW_MS = 1200;
+
+      function handleSecretBrandClick(event) {
+        event.preventDefault();
+        secretClickCount += 1;
+
+        if (secretClickResetTimer) {
+          clearTimeout(secretClickResetTimer);
+        }
+
+        if (secretClickCount >= 3) {
+          secretClickCount = 0;
+          secretClickResetTimer = null;
+          window.location.href = '/app.html';
+          return;
+        }
+
+        secretClickResetTimer = setTimeout(() => {
+          secretClickCount = 0;
+          secretClickResetTimer = null;
+        }, SECRET_CLICK_WINDOW_MS);
+      }
+
       // Vérifier l'auth au chargement
-      window.addEventListener('DOMContentLoaded', checkAuth);
+      window.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        const brandSecret = document.getElementById('brand-secret');
+        if (brandSecret) {
+          brandSecret.addEventListener('click', handleSecretBrandClick);
+        }
+      });
       // Refresh les données quand on revient sur la page (cache navigateur)
       window.addEventListener('pageshow', function(e) {
         if (e.persisted) checkAuth();
