@@ -287,14 +287,9 @@
         return score;
       }
 
-      function getSplitGroup(card) {
-        if (!card) return '';
-        return ['10', 'J', 'Q', 'K'].includes(card.rank) ? '10' : card.rank;
-      }
-
       function canOfferSplit() {
         if (game.isSplit || game.phase !== 'playing' || game.playerHand.length !== 2) return false;
-        return getSplitGroup(game.playerHand[0]) === getSplitGroup(game.playerHand[1]);
+        return game.playerHand[0].rank === game.playerHand[1].rank;
       }
 
       function canAffordSplit() {
