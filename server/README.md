@@ -3,7 +3,7 @@
 This folder contains a minimal development server for a toy online casino.
 
 Current features:
-- SQLite persistence (`server/casino.db`) so balances survive restarts
+- SQLite persistence outside project folder (default: `%APPDATA%\\Skysino\\casino.db`)
 - Local username/password accounts
 
 Quick start:
@@ -14,6 +14,10 @@ Quick start:
 4. npm start
 
 Server runs on `http://localhost:3000` and serves a simple static frontend at `/`.
+
+Data persistence and updates:
+- Player progression is stored outside the project folder, so replacing project files (for example via USB update) does not reset balances.
+- You can override database location with `DATABASE_PATH` in `.env`.
 
 APIs:
 - `POST /api/register` { username, password } -> { token, user }

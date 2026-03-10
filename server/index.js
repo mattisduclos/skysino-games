@@ -6,16 +6,30 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
+const fs = require('fs');
+const os = require('os');
 const sqlite3 = require('sqlite3').verbose();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 const STARTING_BALANCE = 1000; // crédits de départ
-const DB_PATH = path.join(__dirname, 'casino.db');
+const LEGACY_DB_PATH = path.join(__dirname, 'casino.db');
+const DEFAULT_DB_PATH = path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'), 'Skysino', 'casino.db');
+const DB_PATH = process.env.DATABASE_PATH || DEFAULT_DB_PATH;
+
+function prepareDatabaseFile() {
+  fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+
+  // One-time migration: keep existing local progress when adopting new DB location.
+  if (DB_PATH !== LEGACY_DB_PATH && !fs.existsSync(DB_PATH) && fs.existsSync(LEGACY_DB_PATH)) {
+    fs.copyFileSync(LEGACY_DB_PATH, DB_PATH);
+  }
+}
 
 const app = express();
 app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser());
 
+prepareDatabaseFile();
 const db = new sqlite3.Database(DB_PATH);
 
 function dbRun(sql, params = []) {
