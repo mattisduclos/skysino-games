@@ -61,25 +61,64 @@ var db = {
     
     // Luxury (20000-60000€)
     { id: 25, name: 'Croisière Méditerranée', price: 25000, description: 'Croisière 2 semaines luxe', category: 'Voyage' },
-    { id: 26, name: 'Sejour à Dubaï', price: 30000, description: 'Hôtel 5 étoiles + activités', category: 'Voyage' },
-    { id: 27, name: 'Home Cinéma', price: 30000, description: 'Système cinéma 4K complet', category: 'Loisirs' },
+    { id: 26, name: 'Séjour à Dubaï', price: 30000, description: 'Hôtel 5 étoiles + activités', category: 'Voyage' },
+    { id: 27, name: 'Home Cinéma 4K', price: 30000, description: 'Système cinéma 4K complet', category: 'Loisirs' },
     { id: 28, name: 'Montre Omega Seamaster', price: 12000, description: 'Montre de luxe suisse', category: 'Mode' },
     { id: 29, name: 'Sac Hermès Birkin', price: 15000, description: 'Sac à main de luxe', category: 'Mode' },
     { id: 30, name: 'Jet ski Seadoo', price: 25000, description: 'Jet ski haute performance', category: 'Sport' },
-    { id: 31, name: 'Voiture Tesla Model S', price: 35000, description: 'Berline électrique luxe', category: 'Auto' },
+    { id: 31, name: 'Tesla Model S', price: 35000, description: 'Berline électrique luxe', category: 'Auto' },
     { id: 32, name: 'Vacances aux Maldives', price: 40000, description: '3 semaines de rêve', category: 'Voyage' },
+    { id: 33, name: 'Porsche 911 Carrera', price: 50000, description: 'Voiture de sport allemande', category: 'Auto' },
+    { id: 34, name: 'Bateau à moteur Azimut', price: 55000, description: 'Bateau de luxe', category: 'Loisirs' },
     
-    // Ultra-luxury (60000€+)
-    { id: 33, name: 'Tour du monde', price: 75000, description: 'Voyage 6 mois autour du monde', category: 'Voyage' },
-    { id: 34, name: 'Aston Martin Vantage', price: 100000, description: 'Voiture de luxe britannique', category: 'Auto' },
-    { id: 35, name: 'Mercedes G-Class', price: 90000, description: 'SUV de luxe allemand', category: 'Auto' },
-    { id: 36, name: 'Ferrari F8 Tributo', price: 250000, description: 'Supercar italienne', category: 'Auto' },
-    { id: 37, name: 'Yacht privé (location 1 mois)', price: 150000, description: 'Croisière privée', category: 'Voyage' },
-    { id: 38, name: 'Montre Patek Philippe', price: 80000, description: 'Montre de collectionneurs', category: 'Mode' },
-    { id: 39, name: 'Studio d\'enregistrement', price: 120000, description: 'Studio home recording pro', category: 'Musique' },
-    { id: 40, name: 'Lamborghini Huracán', price: 200000, description: 'Supercar italienne', category: 'Auto' },
-    { id: 41, name: 'Villa au bord de mer', price: 500000, description: 'Maison luxe avec plage', category: 'Immobilier' },
-    { id: 42, name: 'Penthouse à Paris', price: 1000000, description: 'Penthouse 5 étages', category: 'Immobilier' }
+    // Ultra-luxury (60000-200000€)
+    { id: 35, name: 'Tour du monde', price: 75000, description: 'Voyage 6 mois autour du monde', category: 'Voyage' },
+    { id: 36, name: 'Aston Martin Vantage', price: 100000, description: 'Voiture de luxe britannique', category: 'Auto' },
+    { id: 37, name: 'Mercedes G-Class', price: 90000, description: 'SUV de luxe allemand', category: 'Auto' },
+    { id: 38, name: 'Ferrari F8 Tributo', price: 250000, description: 'Supercar italienne', category: 'Auto' },
+    { id: 39, name: 'Yacht privé (location 1 mois)', price: 150000, description: 'Croisière privée', category: 'Voyage' },
+    { id: 40, name: 'Montre Patek Philippe', price: 80000, description: 'Montre de collectionneurs', category: 'Mode' },
+    { id: 41, name: 'Studio d\'enregistrement', price: 120000, description: 'Studio home recording pro', category: 'Musique' },
+    { id: 42, name: 'Lamborghini Huracán', price: 200000, description: 'Supercar italienne', category: 'Auto' },
+    
+    // Mega-luxury (200000€+)
+    { id: 43, name: 'Villa à Côte d\'Azur', price: 350000, description: 'Villa 5 chambres vue mer', category: 'Immobilier' },
+    { id: 44, name: 'Jet privé Cessna', price: 500000, description: 'Avion privé avec équipage', category: 'Aviation' },
+    { id: 45, name: 'Yacht 50 mètres', price: 600000, description: 'Yacht de luxe ultra-moderne', category: 'Loisirs' },
+    { id: 46, name: 'Penthouse à Paris', price: 1000000, description: 'Penthouse 5 étages Marais', category: 'Immobilier' },
+    { id: 47, name: 'Rolls-Royce Phantom', price: 450000, description: 'Voiture de prestige ultime', category: 'Auto' },
+    { id: 48, name: 'Château en Provence', price: 800000, description: 'Château historique 15 pièces', category: 'Immobilier' },
+    { id: 49, name: 'Île privée aux Caraïbes', price: 2500000, description: 'Île 10 hectares avec resort', category: 'Immobilier' },
+    { id: 50, name: 'Hôtel 5 étoiles une semaine', price: 150000, description: 'Suite présidentielle tout compris', category: 'Voyage' },
+    { id: 51, name: 'Avion de chasse collector', price: 1200000, description: 'Mirage 2000 restauré', category: 'Aviation' },
+    { id: 52, name: 'Villa à Monaco', price: 950000, description: 'Propriété de prestige Côte d\'Azur', category: 'Immobilier' },
+    { id: 53, name: 'Mégayacht 80 mètres', price: 5000000, description: 'Super yacht avec hélipad', category: 'Loisirs' },
+    { id: 54, name: 'Château anglais', price: 2000000, description: 'Manoir Tudor 50 pièces', category: 'Immobilier' },
+    { id: 55, name: 'Collection de voitures (10x)', price: 3000000, description: 'Ferrari, Lamborghini, Bugatti...', category: 'Auto' },
+    { id: 56, name: 'Île privée Maldives', price: 4000000, description: 'Resort 5 étoiles complet', category: 'Immobilier' },
+    { id: 57, name: 'Palais à Dubaï', price: 10000000, description: 'Palais 50 pièces vue Burj Khalifa', category: 'Immobilier' },
+    
+    // Ultra-Mega-Prestige (10M-1B€)
+    { id: 58, name: 'Château de Versailles réplique', price: 25000000, description: 'Château complet 200 pièces', category: 'Immobilier' },
+    { id: 59, name: 'Collection d\'art complet', price: 50000000, description: 'Monet, Picasso, Van Gogh originals', category: 'Art' },
+    { id: 60, name: 'Îles Grecques privées (5 îles)', price: 75000000, description: 'Archipel avec hôtels et resorts', category: 'Immobilier' },
+    { id: 61, name: 'Constellation de propriétés mondiale', price: 100000000, description: 'Penthouses dans 10 villes (NY, Londres, Tokyo...)', category: 'Immobilier' },
+    { id: 62, name: 'Domaine viticole complet', price: 80000000, description: 'Vignobles Bordeaux + Bourgogne', category: 'Immobilier' },
+    { id: 63, name: 'Flotte de supercars (50)', price: 120000000, description: 'Les 50 plus beaux hypercars du monde', category: 'Auto' },
+    { id: 64, name: 'Paire de Bugatti La Voiture Noire', price: 55000000, description: 'Voiture la plus chère du monde (x2)', category: 'Auto' },
+    { id: 65, name: 'Île privée New Zealand', price: 150000000, description: 'Île 500 hectares avec aéroport', category: 'Immobilier' },
+    { id: 66, name: 'Musée privé international', price: 200000000, description: 'Musée complet avec chef-d\'oeuvres', category: 'Art' },
+    { id: 67, name: 'Réseau d\'hôtels luxe (20)', price: 250000000, description: 'Chaîne hôtelière 5 étoiles mondiale', category: 'Immobilier' },
+    { id: 68, name: 'Station spatiale privée', price: 500000000, description: 'Vaisseau spatial personnel complet', category: 'Aviation' },
+    { id: 69, name: 'Île artificielle personnalisée', price: 300000000, description: 'Île créée sur mesure aux Maldives', category: 'Immobilier' },
+    { id: 70, name: 'Football Club (Manchester/Liverpool)', price: 400000000, description: 'Club de Premier League entier', category: 'Sport' },
+    { id: 71, name: 'Château Loire + vignobles', price: 350000000, description: 'Domaine historique complet France', category: 'Immobilier' },
+    { id: 72, name: 'Île des Caïmans (achat)', price: 600000000, description: 'Archipel paradisiaque complet', category: 'Immobilier' },
+    { id: 73, name: 'Parc d\'attractions Disneyland', price: 800000000, description: 'Parc complet avec propriété foncière', category: 'Loisirs' },
+    { id: 74, name: 'Banque privée entière', price: 750000000, description: 'Institution bancaire avec actifs', category: 'Finance' },
+    { id: 75, name: 'Studio de cinéma (Paramount)', price: 900000000, description: 'Studio cinéma complet avec lots', category: 'Loisirs' },
+    { id: 76, name: 'Petite nation (Monaco achat)', price: 950000000, description: 'Achat d\'une micro-nation européenne', category: 'Immobilier' },
+    { id: 77, name: 'Palais du Louvre reproduction', price: 1000000000, description: 'Réplique exacte du Louvre avec collections', category: 'Immobilier' }
   ]
 };
 
