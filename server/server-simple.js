@@ -274,7 +274,7 @@ var server = http.createServer(function(req, res) {
     var user = db.users[username];
     if (user.balance > 0) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'bonus disponible uniquement a 0 credit', balance: user.balance }));
+      res.end(JSON.stringify({ error: 'bonus disponible uniquement à 0 crédit', balance: user.balance }));
       return;
     }
 
