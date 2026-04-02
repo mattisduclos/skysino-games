@@ -142,6 +142,7 @@
               <div style="text-align:center">
                 <div class="info-label">Solde</div>
                 <div class="info-value" id="balance" style="font-size:1.1rem">100000 🪙</div>
+                <button class="btn btn-trial" id="recoveryBtn" onclick="claimRecovery()" style="display:none;margin-top:0.5rem;padding:0.3rem 0.6rem;font-size:0.75rem;width:100%">+5000</button>
               </div>
               <div style="text-align:center">
                 <div class="info-label">Total pari&eacute;</div>
@@ -523,6 +524,9 @@
         document.getElementById('resultAmount').textContent = winnings > 0 ? `+${winnings} 🪙` : '0 🪙';
         document.getElementById('resultDisplay').classList.add('show');
         document.getElementById('balance').textContent = game.balance + ' 🪙';
+        
+        // Show recovery button only if balance is 0
+        document.getElementById('recoveryBtn').style.display = game.balance === 0 ? 'inline-block' : 'none';
 
         game.bets = {};
         updateBetsDisplay();
@@ -559,6 +563,33 @@
         } catch (e) { /* ignore */ }
       }
 
+      async function claimRecovery() {
+        const token = getToken();
+        if (!token) {
+          alert('Vous devez être connecté');
+          return;
+        }
+
+        try {
+          const res = await fetch(API_BASE + '/api/bonus/recovery', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            game.balance = data.balance;
+            document.getElementById('balance').textContent = game.balance + ' 🪙';
+            document.getElementById('recoveryBtn').style.display = 'none';
+            alert('Vous avez reçu 5000 jetons ! 🎉');
+          } else {
+            alert(data.error || 'Erreur');
+          }
+        } catch (e) {
+          alert('Erreur réseau');
+        }
+      }
+
       async function goHome() {
         await syncBalance();
         window.location.href = '/index.html';
@@ -585,6 +616,7 @@
               document.getElementById('nav-username').textContent = data.username;
               game.balance = data.balance;
               document.getElementById('balance').textContent = game.balance + ' 🪙';
+              document.getElementById('recoveryBtn').style.display = game.balance === 0 ? 'inline-block' : 'none';
             } else if (res.status === 401 || res.status === 403) {
               logoutGame();
             }

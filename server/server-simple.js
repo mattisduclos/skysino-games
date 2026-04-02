@@ -278,9 +278,9 @@ var server = http.createServer(function(req, res) {
       return;
     }
 
-    user.balance += 10000;
+    user.balance += 5000;
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ granted: 10000, balance: user.balance }));
+    res.end(JSON.stringify({ granted: 5000, balance: user.balance }));
     return;
   }
 

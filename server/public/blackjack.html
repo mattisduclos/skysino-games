@@ -136,9 +136,10 @@
         <!-- Game Info -->
         <div class="game-info">
           <div class="game-status" id="gameStatus">Placez votre mise pour commencer</div>
-          <div style="display:flex;justify-content:center;gap:2rem;margin-top:0.75rem">
+          <div style="display:flex;justify-content:center;gap:2rem;margin-top:0.75rem;align-items:center">
             <span style="color:var(--muted);font-size:0.95rem">Solde: <strong style="color:var(--accent)" id="balanceDisplay">100000 🪙</strong></span>
             <span style="color:var(--muted);font-size:0.95rem">Mise: <strong style="color:#fff" id="betDisplay">0 🪙</strong></span>
+            <button class="btn btn-trial" id="recoveryBtn" onclick="claimRecovery()" style="display:none;padding:0.4rem 0.8rem;font-size:0.85rem">+ 5000 jetons</button>
           </div>
         </div>
 
@@ -614,6 +615,9 @@
         // Update balance and bet display
         document.getElementById('balanceDisplay').textContent = game.balance + ' 🪙';
         document.getElementById('betDisplay').textContent = (game.isSplit ? game.bet + game.splitBet : game.bet) + ' 🪙';
+        
+        // Show recovery button only if balance is 0
+        document.getElementById('recoveryBtn').style.display = game.balance === 0 ? 'inline-block' : 'none';
 
         updateSplitButton();
       }
@@ -656,6 +660,32 @@
             body: JSON.stringify({ balance: game.balance })
           });
         } catch (e) { /* ignore */ }
+      }
+
+      async function claimRecovery() {
+        const token = getToken();
+        if (!token) {
+          alert('Vous devez être connecté');
+          return;
+        }
+
+        try {
+          const res = await fetch(API_BASE + '/api/bonus/recovery', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            game.balance = data.balance;
+            updateDisplay();
+            alert('Vous avez reçu 5000 jetons ! 🎉');
+          } else {
+            alert(data.error || 'Erreur');
+          }
+        } catch (e) {
+          alert('Erreur réseau');
+        }
       }
 
       async function goHome() {

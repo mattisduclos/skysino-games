@@ -98,8 +98,12 @@
           <aside class="hero-right">
             <div style="text-align:left;color:var(--muted);font-size:.9rem;margin-bottom:.5rem">Votre solde</div>
             <div class="jackpot" id="hero-balance">Connectez-vous</div>
-            <div style="margin-top:.75rem">
+            <div style="margin-top:.75rem;display:flex;gap:0.5rem;flex-direction:column">
               <button class="btn btn-outline" onclick="updateBalance()" id="refresh-balance" style="display:none">Rafraîchir</button>
+              <div>
+                <button class="btn btn-trial" id="heroRecoveryBtn" onclick="claimRecoveryHome()" style="display:none;width:100%">+ 5000 crédits</button>
+                <div style="color:var(--muted);font-size:0.8rem;margin-top:0.35rem">(uniquement à 0 jeton restants)</div>
+              </div>
             </div>
           </aside>
         </section>
@@ -233,8 +237,37 @@
           document.getElementById('nav-username').textContent = data.username;
           document.getElementById('hero-balance').textContent = data.balance + ' 🪙';
           document.getElementById('refresh-balance').style.display = 'inline-block';
+          
+          // Show recovery button when connected (only works if balance = 0)
+          document.getElementById('heroRecoveryBtn').style.display = 'inline-block';
         } catch (e) {
           // erreur réseau, ne pas déconnecter
+        }
+      }
+
+      async function claimRecoveryHome() {
+        const token = getToken();
+        if (!token) {
+          alert('Vous devez être connecté');
+          return;
+        }
+
+        try {
+          const res = await fetch(API_BASE + '/api/bonus/recovery', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            document.getElementById('hero-balance').textContent = data.balance + ' 🪙';
+            document.getElementById('heroRecoveryBtn').style.display = 'none';
+            alert('Vous avez reçu 5000 crédits ! 🎉');
+          } else {
+            alert(data.error || 'Erreur');
+          }
+        } catch (e) {
+          alert('Erreur réseau');
         }
       }
 

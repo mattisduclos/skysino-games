@@ -129,10 +129,6 @@
         </div>
       </header>
 
-      <div class="alert">
-        ℹ️ Mode démo gratuit — Commencez avec 1000 jetons pour apprendre!
-      </div>
-
       <div class="poker-table">
         <!-- Community Cards -->
         <div style="text-align:center;margin-bottom:1rem">
@@ -150,7 +146,10 @@
         <div class="players-container" id="playersContainer">
           <div class="player" id="player1">
             <div class="player-name">Vous</div>
-            <div class="player-stack" id="p1-stack">Jetons: 1000</div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="player-stack" id="p1-stack">Jetons: 1000</div>
+              <button class="btn btn-trial" id="recoveryBtn" onclick="claimRecoveryPoker()" style="display:none;padding:0.3rem 0.6rem;font-size:0.75rem">+5000</button>
+            </div>
             <div class="player-status" id="p1-status">Attente...</div>
             <div class="player-cards" id="p1-cards">
               <div class="player-card hidden">🂠</div>
@@ -657,6 +656,14 @@
 
           stackEl.textContent = `Jetons: ${p.stack}`;
           statusEl.innerHTML = `Mise: ${p.bet} 🪙${p.folded ? ' <strong>(Couché)</strong>' : ''}`;
+          
+          // Show recovery button only for player 1 when balance is 0
+          if (i === 0) {
+            const recoveryBtn = document.getElementById('recoveryBtn');
+            if (recoveryBtn) {
+              recoveryBtn.style.display = p.stack === 0 ? 'inline-block' : 'none';
+            }
+          }
 
           if (gameState.gameInProgress && i === gameState.currentPlayerIdx && !p.folded) {
             playerEl.classList.add('current-turn');
@@ -742,6 +749,32 @@
             body: JSON.stringify({ balance: playerStack })
           });
         } catch (e) { /* ignore */ }
+      }
+
+      async function claimRecoveryPoker() {
+        const token = getToken();
+        if (!token) {
+          alert('Vous devez être connecté');
+          return;
+        }
+
+        try {
+          const res = await fetch(API_BASE + '/api/bonus/recovery', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            gameState.players[0].stack = data.balance;
+            updateDisplay();
+            alert('Vous avez reçu 5000 jetons ! 🎉');
+          } else {
+            alert(data.error || 'Erreur');
+          }
+        } catch (e) {
+          alert('Erreur réseau');
+        }
       }
 
       async function goHome() {

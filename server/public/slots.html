@@ -97,6 +97,7 @@
               <span class="info-label">Solde</span>
               <span class="info-value" id="balance">100000 🪙</span>
             </div>
+            <button class="btn btn-trial" id="recoveryBtn" onclick="claimRecovery()" style="display:none;margin-top:0.5rem;padding:0.3rem 0.6rem;font-size:0.75rem;width:100%">+5000 jetons</button>
             <div class="info-row">
               <span class="info-label">Dernière Mise</span>
               <span class="info-value" id="lastBet">0 🪙</span>
@@ -291,6 +292,9 @@
         document.getElementById('lastBet').textContent = game.bet + ' 🪙';
         document.getElementById('lastWin').textContent = winnings + ' 🪙';
         document.getElementById('balance').textContent = game.balance + ' 🪙';
+        
+        // Show recovery button only if balance is 0
+        document.getElementById('recoveryBtn').style.display = game.balance === 0 ? 'inline-block' : 'none';
 
         document.getElementById('resultTitle').textContent = title;
         document.getElementById('resultText').textContent = message;
@@ -311,6 +315,33 @@
             alert('Vous n\'avez plus de jetons!');
             goHome();
           }, 1500);
+        }
+      }
+
+      async function claimRecovery() {
+        const token = getToken();
+        if (!token) {
+          alert('Vous devez être connecté');
+          return;
+        }
+
+        try {
+          const res = await fetch(API_BASE + '/api/bonus/recovery', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            game.balance = data.balance;
+            document.getElementById('balance').textContent = game.balance + ' 🪙';
+            document.getElementById('recoveryBtn').style.display = 'none';
+            alert('Vous avez reçu 5000 jetons ! 🎉');
+          } else {
+            alert(data.error || 'Erreur');
+          }
+        } catch (e) {
+          alert('Erreur réseau');
         }
       }
 
@@ -429,7 +460,8 @@
               const data = await res.json();
               document.getElementById('nav-username').textContent = data.username;
               game.balance = data.balance;
-              document.getElementById('balance').textContent = game.balance + ' *';
+              document.getElementById('balance').textContent = game.balance + ' 🪙';
+              document.getElementById('recoveryBtn').style.display = game.balance === 0 ? 'inline-block' : 'none';
             } else if (res.status === 401 || res.status === 403) {
               logoutGame();
             }
