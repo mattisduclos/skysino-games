@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Roulette Classique — SKYSINO</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link id="skin-css" rel="stylesheet" href="">
     <style>
       :root {
         --accent: #d4af37;
@@ -117,8 +119,9 @@
         <h1>Roulette Classique</h1>
         <div id="nav-auth" style="display:flex;gap:1rem;align-items:center">
           <span id="nav-user" style="color:var(--muted);display:none;white-space:nowrap">Connecté: <strong id="nav-username"></strong></span>
+          <a href="/shop.html" class="btn btn-outline" style="text-decoration:none;padding:0.5rem 1rem;font-size:0.9rem">🛍️ Skins</a>
           <a href="/app.html" class="btn btn-outline" id="nav-login-btn" style="text-decoration:none;padding:0.5rem 1rem;font-size:0.9rem">Connexion</a>
-          <button class="btn btn-outline" id="nav-logout-btn" onclick="logoutGame()" style="display:none;padding:0.5rem 1rem;font-size:0.9rem">D&eacute;connexion</button>
+          <button class="btn btn-outline" id="nav-logout-btn" onclick="logoutGame()" style="display:none;padding:0.5rem 1rem;font-size:0.9rem">Déconnexion</button>
         </div>
       </div>
 
@@ -666,7 +669,28 @@
         initializeWheel();
         initializeNumbers();
         checkAuth();
+        loadSkinCSS();
       });
+
+      // Load skin CSS
+      function loadSkinCSS() {
+        const token = getToken();
+        if (!token) return;
+
+        fetch(API_BASE + '/api/shop/skins', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(res => res.json())
+        .then(data => {
+          const activeSkinId = parseInt(localStorage.getItem('activeSkin') || '0');
+          const activeSkin = data.skins.find(s => s.id === activeSkinId);
+          
+          if (activeSkin && activeSkin.cssFile) {
+            document.getElementById('skin-css').href = activeSkin.cssFile;
+          }
+        })
+        .catch(e => console.error('Erreur chargement skin:', e));
+      }
     </script>
   </body>
 </html>

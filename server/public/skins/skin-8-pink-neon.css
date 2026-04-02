@@ -1,0 +1,121 @@
+/* Skin: Rose Neon - Esthétique vaporwave */
+:root {
+  --bg-a: #2d0a3d;
+  --bg-b: #4a1a5c;
+  --accent: #ff1493;
+  --accent-2: #ff69b4;
+  --muted: #ff85d0;
+}
+
+body {
+  background: linear-gradient(180deg, var(--bg-a), var(--bg-b)) !important;
+  color: #ffc0d0 !important;
+}
+
+.btn, .btn-trial, button, input[type="button"], input[type="submit"] {
+  background: linear-gradient(90deg, #ff1493, #ff69b4) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 0 10px rgba(255, 20, 147, 0.3) !important;
+}
+
+.btn:hover, .btn-trial:hover, button:hover, input[type="button"]:hover, input[type="submit"]:hover {
+  filter: brightness(1.15) !important;
+  box-shadow: 0 0 20px rgba(255, 20, 147, 0.6) !important;
+}
+
+.btn-outline, .btn-outline:hover {
+  border-color: rgba(255, 20, 147, 0.5) !important;
+  color: #ff85d0 !important;
+}
+
+.hero h2, h1, h3, h4, .preview-title {
+  color: #ff1493 !important;
+}
+
+.jackpot, .preview-name {
+  color: #ff1493 !important;
+}
+
+.game-card, .promo, .hero-right, .game-section, .card, .shop-item, .inventory-item, .preview-box {
+  background: rgba(255, 20, 147, 0.1) !important;
+  border: 1px solid rgba(255, 20, 147, 0.3) !important;
+}
+
+.tab-btn {
+  color: #ff85d0 !important;
+}
+
+.tab-btn.active {
+  color: #ff1493 !important;
+  border-bottom-color: #ff1493 !important;
+}
+
+.tab-btn:hover {
+  color: #ffc0d0 !important;
+}
+
+nav a, .brand a {
+  color: #ff85d0 !important;
+}
+
+header, .site-top {
+  background: rgba(45, 10, 61, 0.6) !important;
+  border-bottom-color: rgba(255, 20, 147, 0.2) !important;
+}
+
+.game-thumb, .thumb {
+  background: linear-gradient(135deg, rgba(255, 20, 147, 0.15), rgba(255, 105, 180, 0.1)) !important;
+}
+
+.wrap, .container {
+  color: #ffc0d0 !important;
+}
+
+input, textarea, select {
+  background: rgba(45, 10, 61, 0.5) !important;
+  color: #ffc0d0 !important;
+  border-color: rgba(255, 20, 147, 0.3) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #ff85d0 !important;
+}
+
+.preview-modal-content, .awareness-modal-content {
+  background: linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
+  border-color: #ff1493 !important;
+}
+
+.preview-btn, .preview-modal-close {
+  color: #fff !important;
+  background: linear-gradient(90deg, #ff1493, #ff69b4) !important;
+}
+
+.awareness-header h2 {
+  color: #ff1493 !important;
+}
+
+.inventory-item.active {
+  border-color: #ff1493 !important;
+  background: rgba(255, 20, 147, 0.12) !important;
+}
+
+.inventory-active-badge {
+  background: #ff1493 !important;
+  color: #fff !important;
+}
+
+.shop-item:hover, .inventory-item:hover {
+  border-color: rgba(255, 20, 147, 0.5) !important;
+}
+
+.alert {
+  background: rgba(255, 20, 147, 0.1) !important;
+  border-color: #ff1493 !important;
+  color: #ff1493 !important;
+}
+
+footer {
+  border-top-color: rgba(255, 20, 147, 0.2) !important;
+  color: #ff85d0 !important;

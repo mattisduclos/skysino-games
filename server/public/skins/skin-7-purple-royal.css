@@ -1,0 +1,119 @@
+/* Skin: Pourpre Royal - Interface royale en pourpre */
+:root {
+  --bg-a: #2a0845;
+  --bg-b: #440066;
+  --accent: #d946ef;
+  --accent-2: #c084fc;
+  --muted: #e879f9;
+}
+
+body {
+  background: linear-gradient(180deg, var(--bg-a), var(--bg-b)) !important;
+  color: #f3e8ff !important;
+}
+
+.btn, .btn-trial, button, input[type="button"], input[type="submit"] {
+  background: linear-gradient(90deg, #d946ef, #c084fc) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.btn:hover, .btn-trial:hover, button:hover, input[type="button"]:hover, input[type="submit"]:hover {
+  filter: brightness(1.15) !important;
+}
+
+.btn-outline, .btn-outline:hover {
+  border-color: rgba(217, 70, 239, 0.5) !important;
+  color: #e879f9 !important;
+}
+
+.hero h2, h1, h3, h4, .preview-title {
+  color: #d946ef !important;
+}
+
+.jackpot, .preview-name {
+  color: #d946ef !important;
+}
+
+.game-card, .promo, .hero-right, .game-section, .card, .shop-item, .inventory-item, .preview-box {
+  background: rgba(217, 70, 239, 0.1) !important;
+  border: 1px solid rgba(217, 70, 239, 0.3) !important;
+}
+
+.tab-btn {
+  color: #e879f9 !important;
+}
+
+.tab-btn.active {
+  color: #d946ef !important;
+  border-bottom-color: #d946ef !important;
+}
+
+.tab-btn:hover {
+  color: #f3e8ff !important;
+}
+
+nav a, .brand a {
+  color: #e879f9 !important;
+}
+
+header, .site-top {
+  background: rgba(42, 8, 69, 0.6) !important;
+  border-bottom-color: rgba(217, 70, 239, 0.2) !important;
+}
+
+.game-thumb, .thumb {
+  background: linear-gradient(135deg, rgba(217, 70, 239, 0.15), rgba(192, 132, 252, 0.1)) !important;
+}
+
+.wrap, .container {
+  color: #f3e8ff !important;
+}
+
+input, textarea, select {
+  background: rgba(42, 8, 69, 0.5) !important;
+  color: #f3e8ff !important;
+  border-color: rgba(217, 70, 239, 0.3) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #e879f9 !important;
+}
+
+.preview-modal-content, .awareness-modal-content {
+  background: linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
+  border-color: #d946ef !important;
+}
+
+.preview-btn, .preview-modal-close {
+  color: #fff !important;
+  background: linear-gradient(90deg, #d946ef, #c084fc) !important;
+}
+
+.awareness-header h2 {
+  color: #d946ef !important;
+}
+
+.inventory-item.active {
+  border-color: #d946ef !important;
+  background: rgba(217, 70, 239, 0.12) !important;
+}
+
+.inventory-active-badge {
+  background: #d946ef !important;
+  color: #fff !important;
+}
+
+.shop-item:hover, .inventory-item:hover {
+  border-color: rgba(217, 70, 239, 0.5) !important;
+}
+
+.alert {
+  background: rgba(217, 70, 239, 0.1) !important;
+  border-color: #d946ef !important;
+  color: #d946ef !important;
+}
+
+footer {
+  border-top-color: rgba(217, 70, 239, 0.2) !important;
+  color: #e879f9 !important;

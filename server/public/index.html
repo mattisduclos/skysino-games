@@ -4,64 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>SKYSINO — Casino en ligne (dev)</title>
-    <style>
-      :root {
-        --bg-a: #021428;
-        --bg-b: #06213a;
-        --accent: #d4af37;
-        --accent-2: #c9972b;
-        --muted: #cfc7b0;
-        --container: 1200px;
-      }
-      *{box-sizing:border-box}
-      html,body{height:100%;margin:0}
-      body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--bg-a),var(--bg-b));color:#f6f4ef;-webkit-font-smoothing:antialiased}
-      .wrap{max-width:var(--container);margin:0 auto;padding:2rem}
-      
-      /* Header */
-      header.site-top{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;background:transparent;border-bottom:1px solid rgba(255,255,255,0.05)}
-      .brand{display:flex;align-items:center;gap:.75rem}
-      .brand a{color:var(--accent);text-decoration:none;font-weight:700;font-size:1.25rem}
-      nav.main{display:flex;gap:1rem;align-items:center}
-      nav.main a{color:var(--muted);text-decoration:none;font-weight:600}
-      .nav-right{display:flex;gap:1rem;align-items:center}
-      .btn{padding:.6rem 1rem;border-radius:8px;border:0;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
-      .btn-trial{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#081018}
-      .btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
-      
-      /* Hero */
-      .hero{margin-top:2rem;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:2rem;border-radius:14px;display:grid;grid-template-columns:1fr 420px;gap:1.5rem;align-items:center}
-      .hero .kicker{color:var(--accent);font-weight:700;margin-bottom:.5rem}
-      .hero h2{margin:0 0 .5rem;font-size:2rem;color:#fff}
-      .hero p{color:var(--muted);margin:0 0 1rem}
-      .hero-right{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:1.25rem;border-radius:12px;text-align:center;border:1px solid rgba(255,255,255,0.02)}
-      .jackpot{font-size:1.25rem;font-weight:700;color:var(--accent)}
-      .promo-carousel{height:150px;border-radius:10px;background:linear-gradient(90deg, rgba(212,175,55,0.06), rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:700}
-      
-      /* Games */
-      .games-section{margin-top:2rem}
-      .game-section{margin-top:1.5rem;padding:1.5rem;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
-      .game-section > div{display:grid;grid-template-columns:300px 1fr;gap:1.5rem;align-items:center}
-      .game-section h4{margin:0;font-size:1.5rem;color:#fff}
-      .game-section p{color:var(--muted);margin:0.5rem 0}
-      .game-img{height:200px;border-radius:10px;display:block;width:100%;object-fit:cover;box-shadow:0 8px 20px rgba(2,6,23,0.35);border:2px solid var(--accent);transition:transform 0.3s ease}
-      .game-img:hover{transform:scale(1.05)}
-      .game-section img{height:200px;border-radius:10px;display:block;width:100%;object-fit:cover;box-shadow:0 8px 20px rgba(2,6,23,0.35)}
-      
-      /* Promos */
-      .promos{display:flex;gap:1rem;margin-top:1.5rem}
-      .promo{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
-      
-      /* Footer */
-      footer{margin-top:2rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.05);text-align:center;color:var(--muted);font-size:.9rem}
-      
-      @media(max-width:900px){
-        .hero{grid-template-columns:1fr}
-        nav.main{display:none}
-        .game-section > div{grid-template-columns:1fr}
-      }
-    </style>
-  </head>
+    <link rel="stylesheet" href="/styles.css">
+    <link id="skin-css" rel="stylesheet" href="">
   <body>
     <div class="wrap">
       <header class="site-top">
@@ -71,6 +15,7 @@
 
         <nav class="main">
           <a href="/">Accueil</a>
+          <a href="/shop.html">🛍️ Boutique</a>
           <a href="#jeux">Jeux</a>
           <a href="#howto">Aide</a>
         </nav>
@@ -342,6 +287,7 @@
       window.addEventListener('pageshow', function(e) {
         if (e.persisted) checkAuth();
       });
+
     </script>
 
     <!-- Awareness Modal -->
@@ -366,145 +312,6 @@
       </div>
     </div>
 
-    <style>
-      /* Awareness Modal */
-      .awareness-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
-        z-index: 9999;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .awareness-modal.active {
-        display: flex;
-      }
-
-      .awareness-modal-content {
-        background: linear-gradient(180deg, #06213a, #021428);
-        padding: 2rem;
-        border-radius: 14px;
-        max-width: 500px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        animation: slideUp 0.3s ease-out;
-      }
-
-      @keyframes slideUp {
-        from {
-          transform: translateY(30px);
-          opacity: 0;
-        }
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
-      }
-
-      .awareness-header {
-        margin-bottom: 1.5rem;
-      }
-
-      .awareness-header h2 {
-        margin: 0 0 0.5rem;
-        color: #ff6b6b;
-        font-size: 1.5rem;
-      }
-
-      .awareness-header p {
-        margin: 0;
-        color: #cfc7b0;
-        font-size: 0.95rem;
-      }
-
-      .loss-amount {
-        display: inline-block;
-        background: rgba(255, 107, 107, 0.2);
-        color: #ff6b6b;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        font-weight: 700;
-        margin: 1rem 0;
-      }
-
-      .awareness-items {
-        margin: 1.5rem 0;
-      }
-
-      .awareness-item {
-        background: rgba(255, 255, 255, 0.03);
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 0.75rem;
-        border-left: 3px solid #d4af37;
-        transition: all 0.2s ease;
-      }
-
-      .awareness-item:hover {
-        background: rgba(255, 255, 255, 0.05);
-        transform: translateX(4px);
-      }
-
-      .awareness-item-name {
-        font-weight: 600;
-        color: #f6f4ef;
-        margin-bottom: 0.25rem;
-      }
-
-      .awareness-item-price {
-        color: #d4af37;
-        font-weight: 700;
-        font-size: 1.1rem;
-      }
-
-      .awareness-item-desc {
-        color: #cfc7b0;
-        font-size: 0.85rem;
-        margin-top: 0.25rem;
-      }
-
-      .awareness-actions {
-        display: flex;
-        gap: 1rem;
-        margin-top: 1.5rem;
-      }
-
-      .awareness-btn {
-        flex: 1;
-        padding: 0.75rem;
-        border-radius: 8px;
-        border: none;
-        font-weight: 600;
-        cursor: pointer;
-        font-size: 0.95rem;
-        transition: all 0.2s ease;
-      }
-
-      .awareness-btn-close {
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: #cfc7b0;
-      }
-
-      .awareness-btn-close:hover {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.3);
-      }
-
-      .awareness-btn-continue {
-        background: #d4af37;
-        color: #081018;
-      }
-
-      .awareness-btn-continue:hover {
-        opacity: 0.9;
-      }
-    </style>
 
     <script>
       // Awareness Modal Functions
@@ -562,5 +369,21 @@
         const modal = document.getElementById('awareness-modal');
         modal.classList.remove('active');
       }
+
+      // Load skin CSS
+      function loadSkinCSS() {
+        const activeSkinId = parseInt(localStorage.getItem('activeSkin') || '0');
+        if (activeSkinId > 0) {
+          const cssFile = `/skins/skin-${activeSkinId}-${['', 'night-black', 'gold', 'cyberpunk', 'ocean-blue', 'fire', 'forest-green', 'purple-royal', 'pink-neon', 'glacier-mono', 'sunset', 'matrix', 'cosmos'][activeSkinId]}.css`;
+          document.getElementById('skin-css').href = cssFile;
+        }
+      }
+
+      window.addEventListener('load', () => {
+        setTimeout(loadSkinCSS, 50);
+      });
+      
+      // Charger aussi immédiatement
+      loadSkinCSS();
     </script>
 

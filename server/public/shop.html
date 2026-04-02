@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boutique SKYSINO — Skins et Personnalisation</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link id="skin-css" rel="stylesheet" href="">
+  <body>
+    <div class="wrap">
+      <header class="site-top">
+        <div class="brand">
+          <a href="/">SKYSINO</a>
+        </div>
+
+        <nav class="main">
+          <a href="/">Accueil</a>
+          <a href="/shop.html">🛍️ Boutique</a>
+          <a href="/">Jeux</a>
+        </nav>
+
+        <div class="nav-right">
+          <span id="nav-login-group">
+            <a class="btn btn-outline" href="/app.html">Créer un compte / Se connecter</a>
+          </span>
+          <span id="nav-user-group" style="display:none;color:var(--muted);display:flex;gap:1rem;align-items:center">
+            <span>Connecté: <strong id="nav-username"></strong></span>
+            <span id="nav-balance" style="color:var(--accent);font-weight:700"></span>
+            <button class="btn btn-outline" onclick="logoutShop()">Déconnexion</button>
+          </span>
+        </div>
+      </header>
+
+      <main>
+        <!-- HERO -->
+        <section class="hero">
+          <div>
+            <div class="kicker">PERSONNALISATION</div>
+            <h2>Boutique de Skins</h2>
+            <p class="lead">Achetez et appliquez des skins exclusifs pour personnaliser votre interface de jeu.</p>
+          </div>
+
+          <aside class="hero-right">
+            <div style="text-align:left;color:var(--muted);font-size:.9rem;margin-bottom:.5rem">Votre solde</div>
+            <div class="jackpot" id="hero-balance">Connectez-vous</div>
+            <div style="margin-top:.75rem">
+              <button class="btn btn-outline" onclick="updateBalance()" id="refresh-balance" style="display:none;width:100%">Rafraîchir</button>
+            </div>
+          </aside>
+        </section>
+
+        <!-- TABS -->
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('shop')">🛒 Boutique</button>
+          <button class="tab-btn" onclick="switchTab('inventory')">📦 Inventaire</button>
+        </div>
+
+        <!-- SHOP TAB -->
+        <div id="shop" class="tab-content active">
+          <h3>Tous les Skins Disponibles</h3>
+          <p style="color:var(--muted);margin-bottom:1.5rem">Découvrez et achetez des skins pour personnaliser votre interface.</p>
+          
+          <div id="shop-container" class="shop-grid">
+            <!-- Shop items will be inserted here -->
+          </div>
+        </div>
+
+        <!-- INVENTORY TAB -->
+        <div id="inventory" class="tab-content">
+          <div class="preview-section">
+            <h3>Aperçu</h3>
+            <div class="preview-box">
+              <div class="preview-title">Skin actuellement appliqué:</div>
+              <div class="preview-name" id="current-skin-display">Aucun</div>
+            </div>
+          </div>
+
+          <h3>Mes Skins</h3>
+          <p style="color:var(--muted);margin-bottom:1.5rem">Cliquez sur un skin pour l'appliquer.</p>
+          
+          <div id="inventory-container" class="inventory-grid">
+            <!-- Inventory items will be inserted here -->
+          </div>
+        </div>
+
+        <footer>
+          © SKYSINO — Environnement de développement. Contenu et crédits fictifs.
+        </footer>
+      </main>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="preview-modal">
+      <div class="preview-modal-content">
+        <button class="preview-modal-close" onclick="closePreview()">×</button>
+        <h2 id="preview-skin-name">Aperçu du Skin</h2>
+        <p style="color:var(--muted)">Voici à quoi ressemblera votre interface avec ce skin:</p>
+        
+        <div class="preview-demo-box">
+          <h3>Exemple de Bouton</h3>
+          <button class="btn-trial">Jouer au Jeu</button>
+        </div>
+
+        <div class="preview-demo-box">
+          <h3>Exemple d'En-tête</h3>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;border-radius:8px;background:rgba(255,255,255,0.05)">
+            <span style="font-weight:700;font-size:1.25rem;color:var(--accent)">SKYSINO</span>
+            <h4 id="preview-title" style="margin:0">Jeu Exemple</h4>
+            <span style="color:var(--accent);font-weight:700">100 000 🪙</span>
+          </div>
+        </div>
+
+        <div class="preview-demo-box">
+          <h3>Exemple d'Accent</h3>
+          <p style="color:var(--accent);font-size:1.5rem;font-weight:700" id="preview-accent">Couleur d'Accent Principal</p>
+        </div>
+
+        <div style="margin-top:2rem;text-align:center">
+          <button class="btn-trial" onclick="closePreview()" style="padding:0.75rem 2rem">Fermer l'Aperçu</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Auto-detect: si Live Server (5500), appeler Express sur le port 3000
+      const API_BASE = location.port === '3000' ? '' : 'http://localhost:3000';
+
+      function getToken() {
+        return localStorage.getItem('token');
+      }
+
+      function checkAuth() {
+        const token = getToken();
+        const loginGroup = document.getElementById('nav-login-group');
+        const userGroup = document.getElementById('nav-user-group');
+        if (token) {
+          loginGroup.style.display = 'none';
+          userGroup.style.display = 'flex';
+          updateBalance();
+          loadShop();
+          loadInventory();
+        } else {
+          loginGroup.style.display = 'block';
+          userGroup.style.display = 'none';
+          document.getElementById('hero-balance').textContent = 'Connectez-vous';
+          document.getElementById('refresh-balance').style.display = 'none';
+        }
+      }
+
+      async function updateBalance() {
+        const token = getToken();
+        if (!token) return;
+        try {
+          const res = await fetch(API_BASE + '/api/me', { headers: { 'Authorization': 'Bearer ' + token } });
+          if (!res.ok) {
+            if (res.status === 401 || res.status === 403) { logoutShop(); }
+            return;
+          }
+          const data = await res.json();
+          document.getElementById('nav-username').textContent = data.username;
+          document.getElementById('nav-balance').textContent = data.balance + ' 🪙';
+          document.getElementById('hero-balance').textContent = data.balance + ' 🪙';
+          document.getElementById('refresh-balance').style.display = 'inline-block';
+        } catch (e) {
+          // erreur réseau
+        }
+      }
+
+      function logoutShop() {
+        localStorage.removeItem('token');
+        window.location.href = '/';
+      }
+
+      function switchTab(tabName) {
+        // Hide all tabs
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        // Show selected tab
+        document.getElementById(tabName).classList.add('active');
+        event.target.classList.add('active');
+      }
+
+      // Shop Functions
+      async function loadShop() {
+        const token = getToken();
+        if (!token) return;
+        
+        try {
+          const res = await fetch(API_BASE + '/api/shop/skins', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          if (!res.ok) return;
+          
+          const data = await res.json();
+          renderShop(data.skins, data.ownedSkins);
+        } catch (e) {
+          console.error('Erreur lors du chargement de la boutique:', e);
+        }
+      }
+
+      function renderShop(skins, ownedSkins = []) {
+        const container = document.getElementById('shop-container');
+        container.innerHTML = '';
+        
+        skins.forEach(skin => {
+          const owned = ownedSkins.includes(skin.id);
+          const item = document.createElement('div');
+          item.className = 'shop-item';
+          item.style.position = 'relative';
+          
+          item.innerHTML = `
+            <button class="preview-btn" onclick="previewSkin(${skin.id})" title="Aperçu du skin">👁️</button>
+            <div class="shop-item-icon">${skin.icon}</div>
+            <h4>${skin.name}</h4>
+            <p>${skin.description}</p>
+            <div class="shop-item-price">${skin.price} 🪙</div>
+            ${owned ? 
+              '<div class="shop-item-owned">✓ Acheté</div>' : 
+              `<button class="shop-item-btn" onclick="buySkin(${skin.id}, ${skin.price})">Acheter</button>`
+            }
+          `;
+          
+          container.appendChild(item);
+        });
+      }
+
+      async function buySkin(skinId, price) {
+        const token = getToken();
+        if (!token) {
+          alert('Connectez-vous d\'abord');
+          return;
+        }
+
+        try {
+          const res = await fetch(API_BASE + '/api/shop/buy', {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ skinId, price })
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            alert(`✨ Skin acquis! Vous avez maintenant ${data.balance} 🪙`);
+            document.getElementById('nav-balance').textContent = data.balance + ' 🪙';
+            document.getElementById('hero-balance').textContent = data.balance + ' 🪙';
+            loadShop();
+            loadInventory();
+          } else {
+            alert(data.error || 'Erreur lors de l\'achat');
+          }
+        } catch (e) {
+          alert('Erreur réseau');
+        }
+      }
+
+      // Inventory Functions
+      async function loadInventory() {
+        const token = getToken();
+        if (!token) return;
+        
+        try {
+          const res = await fetch(API_BASE + '/api/shop/skins', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          if (!res.ok) return;
+          
+          const data = await res.json();
+          renderInventory(data.skins, data.ownedSkins);
+          loadCurrentSkin();
+        } catch (e) {
+          console.error('Erreur lors du chargement de l\'inventaire:', e);
+        }
+      }
+
+      function renderInventory(skins, ownedSkins = []) {
+        const container = document.getElementById('inventory-container');
+        container.innerHTML = '';
+        
+        const currentSkinId = parseInt(localStorage.getItem('activeSkin') || '0');
+        
+        if (ownedSkins.length === 0) {
+          container.innerHTML = '<div class="empty-state"><h3>Aucun skin possédé</h3><p>Achetez des skins dans la boutique pour les appliquer !</p></div>';
+          return;
+        }
+        
+        ownedSkins.forEach(skinId => {
+          const skin = skins.find(s => s.id === skinId);
+          if (!skin) return;
+          
+          const isActive = currentSkinId === skinId;
+          const item = document.createElement('div');
+          item.className = 'inventory-item' + (isActive ? ' active' : '');
+          
+          item.innerHTML = `
+            ${isActive ? '<div class="inventory-active-badge">✓ ACTIF</div>' : ''}
+            <div class="inventory-item-icon">${skin.icon}</div>
+            <h4>${skin.name}</h4>
+            <p>${skin.description}</p>
+            <button class="inventory-item-btn${isActive ? ' active' : ''}" onclick="applySkin(${skin.id}, '${skin.name}')">
+              ${isActive ? '✓ Appliqué' : 'Appliquer'}
+            </button>
+          `;
+          
+          container.appendChild(item);
+        });
+      }
+
+      function applySkin(skinId, skinName) {
+        localStorage.setItem('activeSkin', skinId);
+        
+        // Charger le CSS immédiatement
+        const token = getToken();
+        if (token) {
+          fetch(API_BASE + '/api/shop/skins', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          })
+          .then(res => res.json())
+          .then(data => {
+            const skin = data.skins.find(s => s.id === skinId);
+            if (skin && skin.cssFile) {
+              document.getElementById('skin-css').href = skin.cssFile;
+            }
+          });
+        }
+        
+        // Mettre à jour l'affichage immédiatement
+        loadCurrentSkin();
+        loadInventory();
+        alert(`✨ Skin "${skinName}" appliqué avec succès!`);
+      }
+
+      function loadCurrentSkin() {
+        const currentSkinId = parseInt(localStorage.getItem('activeSkin') || '0');
+        const skinDisplay = document.getElementById('current-skin-display');
+        
+        if (currentSkinId === 0) {
+          skinDisplay.textContent = 'Aucun';
+        } else {
+          // Récupérer le nom du skin depuis l'API
+          const token = getToken();
+          if (!token) return;
+          
+          fetch(API_BASE + '/api/shop/skins', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          })
+          .then(res => res.json())
+          .then(data => {
+            const skin = data.skins.find(s => s.id === currentSkinId);
+            if (skin) {
+              skinDisplay.textContent = skin.name;
+            }
+          })
+          .catch(e => console.error('Erreur:', e));
+        }
+      }
+
+      // Vérifier l'auth au chargement
+      window.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        loadSkinCSS();
+      });
+      // Refresh les données quand on revient sur la page
+      window.addEventListener('pageshow', function(e) {
+        if (e.persisted) {
+          checkAuth();
+          loadSkinCSS();
+        }
+      });
+
+      // Load and apply skin CSS
+      function loadSkinCSS() {
+        const token = getToken();
+        if (!token) return;
+
+        fetch(API_BASE + '/api/shop/skins', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(res => res.json())
+        .then(data => {
+          const activeSkinId = parseInt(localStorage.getItem('activeSkin') || '0');
+          const activeSkin = data.skins.find(s => s.id === activeSkinId);
+          
+          if (activeSkin && activeSkin.cssFile) {
+            document.getElementById('skin-css').href = activeSkin.cssFile;
+          }
+        })
+        .catch(e => console.error('Erreur chargement skin:', e));
+      }
+
+      // Preview Functions
+      let currentPreviewSkin = null;
+
+      function previewSkin(skinId) {
+        const token = getToken();
+        if (!token) return;
+
+        fetch(API_BASE + '/api/shop/skins', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(res => res.json())
+        .then(data => {
+          currentPreviewSkin = data.skins.find(s => s.id === skinId);
+          if (currentPreviewSkin && currentPreviewSkin.cssFile) {
+            // Charger temporairement le CSS pour la preview
+            document.getElementById('skin-css').href = currentPreviewSkin.cssFile;
+            document.getElementById('preview-skin-name').textContent = currentPreviewSkin.name;
+            
+            document.getElementById('preview-modal').classList.add('active');
+          }
+        })
+        .catch(e => console.error('Erreur preview:', e));
+      }
+
+      function closePreview() {
+        document.getElementById('preview-modal').classList.remove('active');
+        // Recharger le skin actif
+        loadSkinCSS();
+      }
+    </script>
+  </body>
+</html>

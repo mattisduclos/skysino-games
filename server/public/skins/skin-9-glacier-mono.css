@@ -1,0 +1,119 @@
+/* Skin: Monochrome Glacier - Blanc et gris glacial */
+:root {
+  --bg-a: #e5e7eb;
+  --bg-b: #f3f4f6;
+  --accent: #374151;
+  --accent-2: #6b7280;
+  --muted: #9ca3af;
+}
+
+body {
+  background: linear-gradient(180deg, var(--bg-a), var(--bg-b)) !important;
+  color: #1f2937 !important;
+}
+
+.btn, .btn-trial, button, input[type="button"], input[type="submit"] {
+  background: linear-gradient(90deg, #374151, #6b7280) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.btn:hover, .btn-trial:hover, button:hover, input[type="button"]:hover, input[type="submit"]:hover {
+  filter: brightness(0.9) !important;
+}
+
+.btn-outline, .btn-outline:hover {
+  border-color: rgba(55, 65, 81, 0.5) !important;
+  color: #374151 !important;
+}
+
+.hero h2, h1, h3, h4, .preview-title {
+  color: #374151 !important;
+}
+
+.jackpot, .preview-name {
+  color: #374151 !important;
+}
+
+.game-card, .promo, .hero-right, .game-section, .card, .shop-item, .inventory-item, .preview-box {
+  background: rgba(55, 65, 81, 0.1) !important;
+  border: 1px solid rgba(55, 65, 81, 0.2) !important;
+}
+
+.tab-btn {
+  color: #374151 !important;
+}
+
+.tab-btn.active {
+  color: #1f2937 !important;
+  border-bottom-color: #374151 !important;
+}
+
+.tab-btn:hover {
+  color: #1f2937 !important;
+}
+
+nav a, .brand a {
+  color: #374151 !important;
+}
+
+header, .site-top {
+  background: rgba(229, 231, 235, 0.3) !important;
+  border-bottom-color: rgba(55, 65, 81, 0.2) !important;
+}
+
+.game-thumb, .thumb {
+  background: linear-gradient(135deg, rgba(107, 114, 128, 0.15), rgba(55, 65, 81, 0.1)) !important;
+}
+
+.wrap, .container {
+  color: #1f2937 !important;
+}
+
+input, textarea, select {
+  background: rgba(255, 255, 255, 0.5) !important;
+  color: #1f2937 !important;
+  border-color: rgba(55, 65, 81, 0.3) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+.preview-modal-content, .awareness-modal-content {
+  background: linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
+  border-color: #374151 !important;
+}
+
+.preview-btn, .preview-modal-close {
+  color: #fff !important;
+  background: linear-gradient(90deg, #374151, #6b7280) !important;
+}
+
+.awareness-header h2 {
+  color: #374151 !important;
+}
+
+.inventory-item.active {
+  border-color: #374151 !important;
+  background: rgba(55, 65, 81, 0.12) !important;
+}
+
+.inventory-active-badge {
+  background: #374151 !important;
+  color: #fff !important;
+}
+
+.shop-item:hover, .inventory-item:hover {
+  border-color: rgba(55, 65, 81, 0.5) !important;
+}
+
+.alert {
+  background: rgba(55, 65, 81, 0.1) !important;
+  border-color: #374151 !important;
+  color: #374151 !important;
+}
+
+footer {
+  border-top-color: rgba(55, 65, 81, 0.2) !important;
+  color: #9ca3af !important;

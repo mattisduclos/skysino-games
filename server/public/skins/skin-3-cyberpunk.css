@@ -1,0 +1,127 @@
+/* Skin: Cyberpunk Néon - Couleurs néon futuristes */
+:root {
+  --bg-a: #0f0520;
+  --bg-b: #1a0a2e;
+  --accent: #00ff88;
+  --accent-2: #0088ff;
+  --muted: #ff00ff;
+  --card: rgba(0, 255, 136, 0.08);
+  --glass: rgba(0, 136, 255, 0.04);
+}
+
+body {
+  background: linear-gradient(180deg, var(--bg-a), var(--bg-b)) !important;
+  color: #00ff88 !important;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5) !important;
+}
+
+.btn, .btn-trial, button, input[type="button"], input[type="submit"] {
+  background: linear-gradient(90deg, #0088ff, #00ff88) !important;
+  color: #0f0520 !important;
+  border: 2px solid #00ff88 !important;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.6) !important;
+}
+
+.btn:hover, .btn-trial:hover, button:hover, input[type="button"]:hover, input[type="submit"]:hover {
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.9) !important;
+}
+
+.btn-outline, .btn-outline:hover {
+  border-color: rgba(0, 255, 136, 0.5) !important;
+  color: #00ff88 !important;
+}
+
+.hero h2, h1, h3, h4, .preview-title {
+  color: #0088ff !important;
+  text-shadow: 0 0 8px rgba(0, 136, 255, 0.7) !important;
+}
+
+.jackpot, .preview-name {
+  color: #00ff88 !important;
+}
+
+.game-card, .promo, .hero-right, .game-section, .card, .shop-item, .inventory-item, .preview-box {
+  background: rgba(0, 136, 255, 0.1) !important;
+  border: 1px solid rgba(0, 255, 136, 0.5) !important;
+  box-shadow: inset 0 0 10px rgba(0, 255, 136, 0.1) !important;
+}
+
+.tab-btn {
+  color: #00ff88 !important;
+}
+
+.tab-btn.active {
+  color: #0088ff !important;
+  border-bottom-color: #0088ff !important;
+}
+
+.tab-btn:hover {
+  color: #00ff88 !important;
+}
+
+nav a, .brand a {
+  color: #00ff88 !important;
+}
+
+header, .site-top {
+  background: rgba(15, 5, 32, 0.7) !important;
+  border-bottom-color: rgba(0, 255, 136, 0.3) !important;
+}
+
+.game-thumb, .thumb {
+  background: linear-gradient(135deg, rgba(0, 136, 255, 0.2), rgba(0, 255, 136, 0.15)) !important;
+  border: 1px solid rgba(0, 255, 136, 0.3) !important;
+}
+
+.wrap, .container {
+  color: #00ff88 !important;
+}
+
+input, textarea, select {
+  background: rgba(15, 5, 32, 0.5) !important;
+  color: #00ff88 !important;
+  border-color: rgba(0, 255, 136, 0.3) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #00ff88 !important;
+}
+
+.preview-modal-content, .awareness-modal-content {
+  background: linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
+  border-color: #00ff88 !important;
+}
+
+.preview-btn, .preview-modal-close {
+  color: #0f0520 !important;
+  background: linear-gradient(90deg, #00ff88, #0088ff) !important;
+}
+
+.awareness-header h2 {
+  color: #00ff88 !important;
+}
+
+.inventory-item.active {
+  border-color: #00ff88 !important;
+  background: rgba(0, 255, 136, 0.12) !important;
+}
+
+.inventory-active-badge {
+  background: #00ff88 !important;
+  color: #0f0520 !important;
+}
+
+.shop-item:hover, .inventory-item:hover {
+  border-color: rgba(0, 255, 136, 0.7) !important;
+}
+
+.alert {
+  background: rgba(0, 255, 136, 0.1) !important;
+  border-color: #00ff88 !important;
+  color: #00ff88 !important;
+}
+
+footer {
+  border-top-color: rgba(0, 255, 136, 0.3) !important;
+  color: #00ff88 !important;
+}

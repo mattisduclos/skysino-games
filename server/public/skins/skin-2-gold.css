@@ -1,0 +1,126 @@
+/* Skin: Or Luxe - Thème or luxueux */
+:root {
+  --bg-a: #2a2416;
+  --bg-b: #3a3226;
+  --accent: #fbbf24;
+  --accent-2: #f59e0b;
+  --muted: #a89968;
+  --card: rgba(251, 191, 36, 0.08);
+  --glass: rgba(251, 191, 36, 0.04);
+}
+
+body {
+  background: linear-gradient(180deg, var(--bg-a), var(--bg-b)) !important;
+  color: #f5f1e8 !important;
+}
+
+.btn, .btn-trial, button, input[type="button"], input[type="submit"] {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2)) !important;
+  color: #2a2416 !important;
+  border: none !important;
+  font-weight: bold;
+}
+
+.btn:hover, .btn-trial:hover, button:hover, input[type="button"]:hover, input[type="submit"]:hover {
+  filter: brightness(1.2) !important;
+}
+
+.btn-outline, .btn-outline:hover {
+  border-color: rgba(251, 191, 36, 0.5) !important;
+  color: var(--muted) !important;
+}
+
+.hero h2, h1, h3, h4, .preview-title {
+  color: #fbbf24 !important;
+}
+
+.jackpot, .preview-name {
+  color: var(--accent) !important;
+}
+
+.game-card, .promo, .hero-right, .game-section, .card, .shop-item, .inventory-item, .preview-box {
+  background: var(--card) !important;
+  border: 2px solid rgba(251, 191, 36, 0.3) !important;
+}
+
+.tab-btn {
+  color: var(--muted) !important;
+}
+
+.tab-btn.active {
+  color: #fbbf24 !important;
+  border-bottom-color: #fbbf24 !important;
+}
+
+.tab-btn:hover {
+  color: #f5f1e8 !important;
+}
+
+nav a, .brand a {
+  color: var(--muted) !important;
+}
+
+.brand a {
+  color: #fbbf24 !important;
+}
+
+header, .site-top {
+  background: rgba(42, 36, 22, 0.6) !important;
+  border-bottom-color: rgba(251, 191, 36, 0.2) !important;
+}
+
+.game-thumb, .thumb {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.15)) !important;
+}
+
+.wrap, .container {
+  color: #f5f1e8 !important;
+}
+
+input, textarea, select {
+  background: rgba(42, 36, 22, 0.5) !important;
+  color: #f5f1e8 !important;
+  border-color: rgba(251, 191, 36, 0.3) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--muted) !important;
+}
+
+.preview-modal-content, .awareness-modal-content {
+  background: linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
+  border-color: #fbbf24 !important;
+}
+
+.preview-btn, .preview-modal-close {
+  color: #2a2416 !important;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b) !important;
+}
+
+.awareness-header h2 {
+  color: #fbbf24 !important;
+}
+
+.inventory-item.active {
+  border-color: #fbbf24 !important;
+  background: rgba(251, 191, 36, 0.12) !important;
+}
+
+.inventory-active-badge {
+  background: #fbbf24 !important;
+  color: #2a2416 !important;
+}
+
+.shop-item:hover, .inventory-item:hover {
+  border-color: rgba(251, 191, 36, 0.5) !important;
+}
+
+.alert {
+  background: rgba(251, 191, 36, 0.1) !important;
+  border-color: #fbbf24 !important;
+  color: #fbbf24 !important;
+}
+
+footer {
+  border-top-color: rgba(251, 191, 36, 0.2) !important;
+  color: var(--muted) !important;

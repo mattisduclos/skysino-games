@@ -1,0 +1,309 @@
+================================================================================
+    🎯 STRUCTURE RÉORGANISÉE - Vue Visuelle Complète
+================================================================================
+
+📁 e:\MATTIS\LP2I\acf_skysino\
+│
+├── 📄 INDEX.md                           ⭐ COMMENCER ICI (point d'entrée)
+│
+├── 📁 server/
+│   │
+│   ├── 📄 config.js                      🔑 LIRE EN PREMIER (constantes)
+│   ├── 📄 ARCHITECTURE.md                📚 Documentation technique
+│   ├── 📄 GUIDE_POUR_IA.md               🤖 Guide pour IA
+│   ├── 📄 README_ORGANISATION.md         📋 Résumé réorganisation
+│   │
+│   ├── 📄 server-simple.js               🖥️ Serveur principal
+│   ├── 📄 package.json
+│   ├── 📄 data.js                        (legacy)
+│   ├── 📄 db.js                          (legacy)
+│   ├── 📄 userModel.js                   (legacy)
+│   │
+│   ├── 📁 api/                           ✨ NOUVEAU - Routes modulaires
+│   │   ├── 📄 auth.js                    (À implémenter)
+│   │   ├── 📄 shop.js                    (À implémenter)
+│   │   └── 📄 awareness.js               (À implémenter)
+│   │
+│   └── 📁 public/
+│       │
+│       ├── 📄 index.html                 🏠 Page d'accueil
+│       ├── 📄 styles.css                 🎨 CSS centralisé GLOBAL
+│       ├── 📄 app.html                   (page app minimale)
+│       │
+│       ├── 📁 pages/                     ✨ NOUVEAU - Pages HTML organisées
+│       │   ├── 📄 shop.html              🛍️ Boutique skins
+│       │   ├── 📄 blackjack.html         ♠️ Jeu Blackjack
+│       │   ├── 📄 poker.html             ♣️ Jeu Poker
+│       │   ├── 📄 roulette.html          🎡 Jeu Roulette
+│       │   └── 📄 slots.html             🎰 Jeu Slots
+│       │
+│       ├── 📁 scripts/                   ✨ NOUVEAU - JavaScript modulaire
+│       │   ├── 📄 utils.js               ⚡ Fonctions partagées (CHARGER PARTOUT)
+│       │   ├── 📄 main.js                🔧 Logique commune (CHARGER PARTOUT)
+│       │   ├── 📄 shop.js                💼 Logique boutique (shop.html)
+│       │   ├── 📄 games.js               🎮 Logique jeux (game pages)
+│       │   └── 📄 auth.js                🔐 Logique authentification
+│       │
+│       ├── 📁 skins/                     🎭 Thèmes CSS (12 fichiers)
+│       │   ├── 📄 skin-0-night-black.css
+│       │   ├── 📄 skin-1-gold.css
+│       │   ├── 📄 skin-2-cyberpunk.css
+│       │   ├── 📄 skin-3-ocean-blue.css
+│       │   ├── 📄 skin-4-fire.css
+│       │   ├── 📄 skin-5-forest-green.css
+│       │   ├── 📄 skin-6-purple-royal.css
+│       │   ├── 📄 skin-7-pink-neon.css
+│       │   ├── 📄 skin-8-glacier-mono.css
+│       │   ├── 📄 skin-9-sunset.css
+│       │   ├── 📄 skin-10-matrix.css
+│       │   └── 📄 skin-11-cosmos.css
+│       │
+│       └── 📁 assets/                    🖼️ Images/ressources
+│
+└── 📄 README.md                          (original)
+
+================================================================================
+    📋 DESCRIPTION COURTE CHAQUE FICHIER
+================================================================================
+
+🔑 FICHIERS CLÉS À LIRE
+
+  INDEX.md                    → Point d'entrée - où commencer
+  config.js                   → Source unique de vérité (skins, APIs, jeux)
+  ARCHITECTURE.md             → Documentation technique complète
+  GUIDE_POUR_IA.md            → Instructions précises de travail IA
+  README_ORGANISATION.md      → Résumé avant/après et avantages
+
+================================================================================
+    🔧 FICHIERS SCRIPTS
+================================================================================
+
+/scripts/utils.js
+  • Fonctions partagées
+  • Requêtes API avec fetchAPI()
+  • Gestion skin: loadActiveSkin(), changeSkin()
+  • Authentification: getCurrentUser(), setAuthToken(), logout()
+  • DOM: showNotification(), debounce(), throttle()
+  • Format: formatMoney(), formatDate()
+  ✅ Chargé sur TOUTES les pages
+
+/scripts/main.js
+  • Logique d'authentification globale
+  • Mise à jour UI utilisateur (nom, solde)
+  • Fonctions navigation: navigateToGame(), navigateToShop(), etc.
+  • Événements skinChanged
+  ✅ Chargé sur TOUTES les pages
+
+/scripts/shop.js
+  • loadShop() - Charge liste skins de config
+  • displayInventory() - Affiche skins possédés
+  • buyOrActivateSkin() - Achète ou active
+  • activateSkin() - Change skin actif
+  • previewSkin() - Affiche aperçu
+  📌 À charger dans shop.html
+
+/scripts/games.js
+  • quitGame() - Quitter le jeu
+  • placeBet() - Placer une mise
+  • addWinnings() - Ajouter gains
+  • saveGameStats() - Sauvegarder stats
+  • getGameStats() - Récupérer stats
+  📌 À charger dans les pages jeux
+
+/scripts/auth.js
+  • handleLogin() - Gère soumission login
+  • handleRegister() - Gère soumission register
+  • showLoginForm() - Affiche modal login
+  • showRegisterForm() - Affiche modal register
+  • logout() - Efface tokens
+  📌 À charger si page a formulaire auth
+
+================================================================================
+    🎨 STYLES CSS
+================================================================================
+
+/styles.css
+  • CSS GLOBAL pour toutes les pages
+  • Variables :root avec couleurs
+  • Styles généraux (header, nav, footer, etc.)
+  • Styles boutique (tabs, shop-item, inventaire)
+  • Styles modales (preview, awareness)
+  • Media queries responsif
+  • Chargé dans TOUS les pages via <link>
+
+/skins/skin-N-name.css
+  • Surcharge :root avec couleurs du thème
+  • Cibles 30+ sélecteurs (btn, input, modal, etc.)
+  • Chargé dynamiquement via <link id="skin-css">
+  • Changeable via localStorage.setItem('activeSkin')
+
+================================================================================
+    📄 STRUCTURE HTML STANDARD
+================================================================================
+
+Chaque page HTML DOIT avoir:
+
+  <!DOCTYPE html>
+  <html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titre</title>
+    
+    <!-- CSS GLOBAL -->
+    <link rel="stylesheet" href="/styles.css">
+    
+    <!-- SKIN DYNAMIQUE -->
+    <link id="skin-css" rel="stylesheet" href="">
+  </head>
+  <body>
+    <!-- CONTENU HTML PUR (pas de <style> ni <script> inline!) -->
+    
+    <!-- SCRIPTS EN FIN DE BODY -->
+    <script src="/scripts/utils.js"></script>   <!-- PARTOUT -->
+    <script src="/scripts/main.js"></script>    <!-- PARTOUT -->
+    <script src="/scripts/page-specifique.js"></script>  <!-- Si besoin -->
+  </body>
+  </html>
+
+================================================================================
+    🔌 ENDPOINTS API (depuis config.js)
+================================================================================
+
+CONFIG.api.auth
+  POST /api/auth/register         { username, password }
+  POST /api/auth/login            { username, password }
+  POST /api/auth/logout           {}
+
+CONFIG.api.shop
+  GET  /api/shop/skins            → liste skins
+  POST /api/shop/buy              { skinId }
+  GET  /api/shop/inventory        → skins possédés
+
+CONFIG.api.awareness
+  GET  /api/awareness/items       → notifications
+  POST /api/awareness/mark-read   { itemId }
+
+================================================================================
+    💾 localStorage (Client)
+================================================================================
+
+User Auth:
+  localStorage.getItem('authToken')       JWT du user
+  localStorage.getItem('user')            JSON user { id, username, balance, inventory }
+
+Skin:
+  localStorage.getItem('activeSkin')      ID du skin actif (0-11)
+
+Game Stats:
+  localStorage.getItem('gameStats')       JSON statistiques jeux
+
+================================================================================
+    🎯 FLUX DE TRAVAIL POUR IA
+================================================================================
+
+1. AVANT TOUTE MODIFICATION
+   ├─ Lire config.js (2 min)
+   ├─ Lire ARCHITECTURE.md (5 min)
+   └─ Lire GUIDE_POUR_IA.md (10 min)
+
+2. TROUVER FICHIER À MODIFIER
+   ├─ Constante? → config.js
+   ├─ Fonction commune? → utils.js
+   ├─ Logique boutique? → scripts/shop.js
+   ├─ Logique jeux? → scripts/games.js
+   ├─ Page HTML? → pages/ ou index.html
+   └─ CSS global? → styles.css
+
+3. MODIFIER
+   ├─ Garder HTML épuré
+   ├─ Utiliser fetchAPI() pour APIs
+   ├─ Utiliser CONFIG.* pour constantes
+   └─ Utiliser fonctions utils.js
+
+4. TESTER
+   ├─ Redémarrer serveur: node server-simple.js
+   ├─ Ouvrir http://localhost:3000
+   ├─ Vérifier console F12
+   └─ Tester chaque page
+
+5. FINALISER
+   ├─ Vérifier checklist GUIDE_POUR_IA.md
+   └─ Mettre à jour ARCHITECTURE.md si structure change
+
+================================================================================
+    ✨ AVANTAGES CETTE STRUCTURE
+================================================================================
+
+✅ Configuration Centralisée
+   • Un seul endroit pour toutes les constantes
+   • Facile de trouver et modifier
+
+✅ Code Modulaire
+   • Chaque script a une responsabilité claire
+   • Facile d'ajouter/modifier features
+
+✅ HTML Épuré
+   • Seulement contenu, pas de logique
+   • Facile à parser et comprendre
+
+✅ Documentation Complète
+   • Guides détaillés pour IA
+   • Explications architecture
+   • Checklists avant commit
+
+✅ Optimisé pour IA
+   • Moins de contexte à lire
+   • Fluidité accrue
+   • Moins de bugs
+
+================================================================================
+    🚀 COMMANDES TERMINAL RAPIDES
+================================================================================
+
+# Redémarrer serveur
+Get-Process node | Stop-Process -Force
+cd 'e:\MATTIS\LP2I\acf_skysino\server'
+node server-simple.js
+
+# Ouvrir navigateur
+start http://localhost:3000
+
+# Vider cache navigateur
+# F12 → Network → Disable cache → F5
+
+================================================================================
+    📞 BESOIN D'AIDE?
+================================================================================
+
+Question?                           Voir:
+─────────────────────────────────────────────────────────────────────────────
+Où placer constante?                config.js
+Où placer fonction commune?         utils.js
+Où placer logique boutique?         scripts/shop.js
+Où placer logique jeux?             scripts/games.js
+Comment faire requête API?          utils.js → fetchAPI()
+Comment charger skin?               utils.js → loadActiveSkin()
+Comment montrer message?            utils.js → showNotification()
+Comment obtenir user actuel?        utils.js → getCurrentUser()
+Comment modifier HTML page?         pages/*.html (gardez épuré!)
+Comment modifier CSS global?        styles.css
+Comment ajouter API?                server-simple.js + config.js
+Erreur serveur?                     Console Node.js
+Erreur client?                      Console Navigateur (F12)
+Structure pas claire?               ARCHITECTURE.md
+Besoin instructions détaillées?     GUIDE_POUR_IA.md
+
+================================================================================
+    🎓 TL;DR (Résumé Ultra-Court)
+================================================================================
+
+1. Lire config.js
+2. Lire GUIDE_POUR_IA.md
+3. Modifier le bon fichier
+4. Tester dans navigateur
+5. C'est tout!
+
+================================================================================
+    Version: 1.0 | Date: 2 Avril 2026 | Optimisé pour: IA 🤖
+================================================================================

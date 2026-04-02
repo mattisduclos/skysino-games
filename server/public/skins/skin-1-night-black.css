@@ -1,0 +1,121 @@
+/* Skin: Mode Nuit Noir - Thème sombre minimaliste */
+:root {
+  --bg-a: #0a0e27;
+  --bg-b: #0f1433;
+  --accent: #6b7280;
+  --accent-2: #4b5563;
+  --muted: #9ca3af;
+  --card: rgba(107, 114, 128, 0.08);
+  --glass: rgba(107, 114, 128, 0.04);
+}
+
+body {
+  background: linear-gradient(180deg, var(--bg-a), var(--bg-b)) !important;
+  color: #e5e7eb !important;
+}
+
+.btn, .btn-trial, button, input[type="button"], input[type="submit"] {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2)) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.btn:hover, .btn-trial:hover, button:hover, input[type="button"]:hover, input[type="submit"]:hover {
+  filter: brightness(1.15) !important;
+}
+
+.btn-outline, .btn-outline:hover {
+  border-color: rgba(107, 114, 128, 0.5) !important;
+  color: var(--muted) !important;
+}
+
+.hero h2, h1, h3, h4, .preview-title {
+  color: #e5e7eb !important;
+}
+
+.jackpot, .preview-name {
+  color: var(--accent) !important;
+}
+
+.game-card, .promo, .hero-right, .game-section, .card, .shop-item, .inventory-item, .preview-box {
+  background: var(--card) !important;
+  border: 1px solid rgba(107, 114, 128, 0.2) !important;
+}
+
+.tab-btn {
+  color: var(--muted) !important;
+}
+
+.tab-btn.active {
+  color: #e5e7eb !important;
+  border-bottom-color: #6b7280 !important;
+}
+
+.tab-btn:hover {
+  color: #e5e7eb !important;
+}
+
+nav a, .brand a {
+  color: var(--muted) !important;
+}
+
+header, .site-top {
+  background: rgba(10, 14, 39, 0.5) !important;
+  border-bottom-color: rgba(107, 114, 128, 0.2) !important;
+}
+
+.game-thumb, .thumb {
+  background: linear-gradient(135deg, rgba(107, 114, 128, 0.3), rgba(75, 85, 99, 0.2)) !important;
+}
+
+.wrap, .container {
+  color: #e5e7eb !important;
+}
+
+input, textarea, select {
+  background: rgba(10, 14, 39, 0.5) !important;
+  color: #e5e7eb !important;
+  border-color: rgba(107, 114, 128, 0.3) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--muted) !important;
+}
+
+.preview-modal-content, .awareness-modal-content {
+  background: linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
+  border-color: #6b7280 !important;
+}
+
+.preview-btn, .preview-modal-close {
+  color: #0a0e27 !important;
+  background: linear-gradient(90deg, #6b7280, #4b5563) !important;
+}
+
+.awareness-header h2 {
+  color: #6b7280 !important;
+}
+
+.inventory-item.active {
+  border-color: #6b7280 !important;
+  background: rgba(107, 114, 128, 0.12) !important;
+}
+
+.inventory-active-badge {
+  background: #6b7280 !important;
+  color: #fff !important;
+}
+
+.shop-item:hover, .inventory-item:hover {
+  border-color: rgba(107, 114, 128, 0.5) !important;
+}
+
+.alert {
+  background: rgba(107, 114, 128, 0.1) !important;
+  border-color: #6b7280 !important;
+  color: #6b7280 !important;
+}
+
+footer {
+  border-top-color: rgba(107, 114, 128, 0.2) !important;
+  color: var(--muted) !important;

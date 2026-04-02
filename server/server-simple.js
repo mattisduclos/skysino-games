@@ -119,8 +119,23 @@ var db = {
     { id: 75, name: 'Studio de cinéma (Paramount)', price: 900000000, description: 'Studio cinéma complet avec lots', category: 'Loisirs' },
     { id: 76, name: 'Petite nation (Monaco achat)', price: 950000000, description: 'Achat d\'une micro-nation européenne', category: 'Immobilier' },
     { id: 77, name: 'Palais du Louvre reproduction', price: 1000000000, description: 'Réplique exacte du Louvre avec collections', category: 'Immobilier' }
+  ],
+  skins: [
+    { id: 1, name: 'Mode Nuit Noir', icon: '🌙', description: 'Thème sombre minimaliste', price: 2500, cssFile: '/skins/skin-1-night-black.css' },
+    { id: 2, name: 'Or Métallique', icon: '✨', description: 'Interface dorée luxueuse', price: 5000, cssFile: '/skins/skin-2-gold.css' },
+    { id: 3, name: 'Cyberpunk Néon', icon: '🤖', description: 'Couleurs néon futuristes', price: 7500, cssFile: '/skins/skin-3-cyberpunk.css' },
+    { id: 4, name: 'Bleu Océan', icon: '🌊', description: 'Thème bleu océan apaisé', price: 3500, cssFile: '/skins/skin-4-ocean-blue.css' },
+    { id: 5, name: 'Feu Ardent', icon: '🔥', description: 'Couleurs chaudes et dynamiques', price: 4500, cssFile: '/skins/skin-5-fire.css' },
+    { id: 6, name: 'Forêt Verte', icon: '🌲', description: 'Thème vert nature', price: 3000, cssFile: '/skins/skin-6-forest-green.css' },
+    { id: 7, name: 'Pourpre Royal', icon: '👑', description: 'Interface royale en pourpre', price: 6000, cssFile: '/skins/skin-7-purple-royal.css' },
+    { id: 8, name: 'Rose Neon', icon: '💫', description: 'Esthétique vaporwave', price: 5500, cssFile: '/skins/skin-8-pink-neon.css' },
+    { id: 9, name: 'Monochrome Glacier', icon: '❄️', description: 'Blanc et gris glacial', price: 4000, cssFile: '/skins/skin-9-glacier-mono.css' },
+    { id: 10, name: 'Sunset Paradise', icon: '🌅', description: 'Coucher de soleil tropical', price: 5500, cssFile: '/skins/skin-10-sunset.css' },
+    { id: 11, name: 'Matrice Code', icon: '💻', description: 'Effet Matrix vert', price: 7000, cssFile: '/skins/skin-11-matrix.css' },
+    { id: 12, name: 'Galaxie Cosmos', icon: '🌌', description: 'Univers étoilé infini', price: 8000, cssFile: '/skins/skin-12-cosmos.css' }
   ]
 };
+db.users.ownedSkins = db.users.ownedSkins || {};
 
 // Simple token management
 var tokens = {};
@@ -338,6 +353,76 @@ var server = http.createServer(function(req, res) {
         
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ items: items, totalLoss: lossAmount }));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Bad request' }));
+      }
+    });
+    return;
+  }
+
+  // Shop endpoints
+  if (pathname === '/api/shop/skins' && method === 'GET') {
+    var authHeader = req.headers['authorization'] || '';
+    var token = authHeader.split(' ')[1];
+    var username = validateToken(token);
+    
+    if (!username) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    
+    var ownedSkins = db.users.ownedSkins[username] || [];
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ skins: db.skins, ownedSkins: ownedSkins }));
+    return;
+  }
+
+  if (pathname === '/api/shop/buy' && method === 'POST') {
+    var authHeader = req.headers['authorization'] || '';
+    var token = authHeader.split(' ')[1];
+    var username = validateToken(token);
+    
+    if (!username) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+
+    var body = '';
+    req.on('data', function(chunk) { body += chunk; });
+    req.on('end', function() {
+      try {
+        var data = JSON.parse(body);
+        var skinId = data.skinId;
+        var price = data.price;
+        var user = db.users[username];
+        
+        // Check if user already owns this skin
+        var ownedSkins = db.users.ownedSkins[username] || [];
+        if (ownedSkins.indexOf(skinId) !== -1) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Vous possédez déjà ce skin' }));
+          return;
+        }
+        
+        // Check balance
+        if (user.balance < price) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Solde insuffisant' }));
+          return;
+        }
+        
+        // Deduct balance and add skin
+        user.balance -= price;
+        if (!db.users.ownedSkins[username]) {
+          db.users.ownedSkins[username] = [];
+        }
+        db.users.ownedSkins[username].push(skinId);
+        
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ balance: user.balance, skinId: skinId }));
       } catch (e) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Bad request' }));

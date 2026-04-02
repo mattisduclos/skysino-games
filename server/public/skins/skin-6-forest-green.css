@@ -1,0 +1,119 @@
+/* Skin: Forêt Verte - Thème vert nature */
+:root {
+  --bg-a: #0d2818;
+  --bg-b: #1a4d2e;
+  --accent: #2ecc71;
+  --accent-2: #27ae60;
+  --muted: #52b788;
+}
+
+body {
+  background: linear-gradient(180deg, var(--bg-a), var(--bg-b)) !important;
+  color: #c7f0d8 !important;
+}
+
+.btn, .btn-trial, button, input[type="button"], input[type="submit"] {
+  background: linear-gradient(90deg, #2ecc71, #27ae60) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.btn:hover, .btn-trial:hover, button:hover, input[type="button"]:hover, input[type="submit"]:hover {
+  filter: brightness(1.15) !important;
+}
+
+.btn-outline, .btn-outline:hover {
+  border-color: rgba(46, 204, 113, 0.5) !important;
+  color: #52b788 !important;
+}
+
+.hero h2, h1, h3, h4, .preview-title {
+  color: #2ecc71 !important;
+}
+
+.jackpot, .preview-name {
+  color: #2ecc71 !important;
+}
+
+.game-card, .promo, .hero-right, .game-section, .card, .shop-item, .inventory-item, .preview-box {
+  background: rgba(46, 204, 113, 0.1) !important;
+  border: 1px solid rgba(46, 204, 113, 0.3) !important;
+}
+
+.tab-btn {
+  color: #52b788 !important;
+}
+
+.tab-btn.active {
+  color: #2ecc71 !important;
+  border-bottom-color: #2ecc71 !important;
+}
+
+.tab-btn:hover {
+  color: #c7f0d8 !important;
+}
+
+nav a, .brand a {
+  color: #52b788 !important;
+}
+
+header, .site-top {
+  background: rgba(13, 40, 24, 0.6) !important;
+  border-bottom-color: rgba(46, 204, 113, 0.2) !important;
+}
+
+.game-thumb, .thumb {
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(39, 174, 96, 0.1)) !important;
+}
+
+.wrap, .container {
+  color: #c7f0d8 !important;
+}
+
+input, textarea, select {
+  background: rgba(13, 40, 24, 0.5) !important;
+  color: #c7f0d8 !important;
+  border-color: rgba(46, 204, 113, 0.3) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #52b788 !important;
+}
+
+.preview-modal-content, .awareness-modal-content {
+  background: linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
+  border-color: #2ecc71 !important;
+}
+
+.preview-btn, .preview-modal-close {
+  color: #fff !important;
+  background: linear-gradient(90deg, #2ecc71, #27ae60) !important;
+}
+
+.awareness-header h2 {
+  color: #2ecc71 !important;
+}
+
+.inventory-item.active {
+  border-color: #2ecc71 !important;
+  background: rgba(46, 204, 113, 0.12) !important;
+}
+
+.inventory-active-badge {
+  background: #2ecc71 !important;
+  color: #fff !important;
+}
+
+.shop-item:hover, .inventory-item:hover {
+  border-color: rgba(46, 204, 113, 0.5) !important;
+}
+
+.alert {
+  background: rgba(46, 204, 113, 0.1) !important;
+  border-color: #2ecc71 !important;
+  color: #2ecc71 !important;
+}
+
+footer {
+  border-top-color: rgba(46, 204, 113, 0.2) !important;
+  color: #52b788 !important;
