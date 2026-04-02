@@ -170,6 +170,21 @@
             <label class="betting-label">Entrez votre mise:</label>
             <input type="number" id="betAmount" placeholder="Montant par pari" min="1" value="10">
             
+            <!-- Quick Bet Buttons -->
+            <div class="quick-buttons" style="margin:0.75rem 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(50px,1fr));gap:0.5rem">
+              <button class="btn btn-outline" onclick="quickBet(-1000)" style="padding:0.4rem;font-size:0.8rem">-1000</button>
+              <button class="btn btn-outline" onclick="quickBet(-100)" style="padding:0.4rem;font-size:0.8rem">-100</button>
+              <button class="btn btn-outline" onclick="quickBet(-50)" style="padding:0.4rem;font-size:0.8rem">-50</button>
+              <button class="btn btn-outline" onclick="quickBet(-10)" style="padding:0.4rem;font-size:0.8rem">-10</button>
+              <button class="btn btn-outline" onclick="quickBet(-1)" style="padding:0.4rem;font-size:0.8rem">-1</button>
+              <button class="btn btn-outline" onclick="quickBet(1)" style="padding:0.4rem;font-size:0.8rem">+1</button>
+              <button class="btn btn-outline" onclick="quickBet(10)" style="padding:0.4rem;font-size:0.8rem">+10</button>
+              <button class="btn btn-outline" onclick="quickBet(50)" style="padding:0.4rem;font-size:0.8rem">+50</button>
+              <button class="btn btn-outline" onclick="quickBet(100)" style="padding:0.4rem;font-size:0.8rem">+100</button>
+              <button class="btn btn-outline" onclick="quickBet(1000)" style="padding:0.4rem;font-size:0.8rem">+1000</button>
+              <button class="btn btn-outline" onclick="setMaxBet()" style="padding:0.4rem;font-size:0.8rem">Max</button>
+            </div>
+            
             <!-- Betting Zones -->
             <div style="margin:1rem 0">
               <div style="color:var(--muted);font-size:0.9rem;margin-bottom:0.5rem">Zones (gain 2x):</div>
@@ -426,6 +441,17 @@
       function clearAllBets() {
         game.bets = {};
         updateBetsDisplay();
+      }
+
+      function quickBet(amount) {
+        const input = document.getElementById('betAmount');
+        const current = Number(input.value) || 0;
+        const max = game.balance;
+        input.value = Math.min(max, Math.max(0, current + amount));
+      }
+
+      function setMaxBet() {
+        document.getElementById('betAmount').value = game.balance;
       }
 
       function spinWheel() {
