@@ -107,6 +107,7 @@
         .table{padding:1.5rem 1rem}
       }
     </style>
+    <script src="/awareness.js"></script>
   </head>
   <body>
     <div class="wrap">
@@ -136,7 +137,7 @@
         <div class="game-info">
           <div class="game-status" id="gameStatus">Placez votre mise pour commencer</div>
           <div style="display:flex;justify-content:center;gap:2rem;margin-top:0.75rem">
-            <span style="color:var(--muted);font-size:0.95rem">Solde: <strong style="color:var(--accent)" id="balanceDisplay">1000 🪙</strong></span>
+            <span style="color:var(--muted);font-size:0.95rem">Solde: <strong style="color:var(--accent)" id="balanceDisplay">100000 🪙</strong></span>
             <span style="color:var(--muted);font-size:0.95rem">Mise: <strong style="color:#fff" id="betDisplay">0 🪙</strong></span>
           </div>
         </div>
@@ -211,7 +212,7 @@
       const RANK_VALUES = { 'A': 11, 'K': 10, 'Q': 10, 'J': 10, '10': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2 };
 
       let game = {
-        balance: 1000,
+        balance: 100000,
         deck: [],
         playerHand: [],
         splitHand: [],
@@ -520,6 +521,9 @@
       }
 
       function endGame(result, message, winnings) {
+        const betAmount = game.isSplit ? (game.bet + game.splitBet) : game.bet;
+        const lossAmount = betAmount - winnings;
+        
         game.balance += winnings;
         game.phase = 'finished';
         updateDisplay();
@@ -540,6 +544,13 @@
 
         setTimeout(() => {
           document.getElementById('resultModal').classList.add('show');
+          
+          // Show awareness notification if player lost money
+          if (lossAmount > 0) {
+            setTimeout(() => {
+              showAwarenessNotification(lossAmount);
+            }, 500);
+          }
         }, 1500);
       }
 

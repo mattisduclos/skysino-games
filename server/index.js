@@ -1,7 +1,7 @@
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
-const bodyParser = require('express').json;
+const bodyParser = require('express').json();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
@@ -11,7 +11,7 @@ const os = require('os');
 const sqlite3 = require('sqlite3').verbose();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
-const STARTING_BALANCE = 1000; // crédits de départ
+const STARTING_BALANCE = 100000; // crédits de départ
 const LEGACY_DB_PATH = path.join(__dirname, 'casino.db');
 const DEFAULT_DB_PATH = path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'), 'Skysino', 'casino.db');
 const DB_PATH = process.env.DATABASE_PATH || DEFAULT_DB_PATH;
@@ -27,14 +27,14 @@ function prepareDatabaseFile() {
 
 const app = express();
 app.use(cors({ origin: true, credentials: true }));
-app.use(bodyParser());
+app.use(bodyParser);
 
 prepareDatabaseFile();
 const db = new sqlite3.Database(DB_PATH);
 
 function dbRun(sql, params = []) {
   return new Promise((resolve, reject) => {
-    db.run(sql, params, function onRun(err) {
+    db.run(sql, params, function(err) {
       if (err) return reject(err);
       resolve({ lastID: this.lastID, changes: this.changes });
     });
@@ -50,8 +50,8 @@ function dbGet(sql, params = []) {
   });
 }
 
-async function initDb() {
-  await dbRun(`
+function initDb() {
+  return dbRun(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       username TEXT NOT NULL UNIQUE COLLATE NOCASE,
@@ -59,7 +59,43 @@ async function initDb() {
       balance INTEGER NOT NULL DEFAULT 1000,
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
-  `);
+  `).then(function() {
+    return dbRun(`
+      CREATE TABLE IF NOT EXISTS awareness_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        price INTEGER NOT NULL,
+        description TEXT,
+        category TEXT
+      )
+    `);
+  }).then(function() {
+    return dbGet('SELECT COUNT(*) as count FROM awareness_items');
+  }).then(function(count) {
+    if (count && count.count === 0) {
+      const items = [
+        { name: 'iMac', price: 1500, description: 'iMac haute performance', category: 'Tech' },
+        { name: 'Home Cinéma', price: 30000, description: 'Système home cinéma premium', category: 'Loisirs' },
+        { name: 'Tour du monde', price: 75000, description: 'Voyage autour du monde', category: 'Voyage' },
+        { name: 'Aston Martin Vantage (2018)', price: 100000, description: 'Voiture de luxe', category: 'Auto' },
+        { name: 'MacBook Pro', price: 3000, description: 'MacBook Pro 16 pouces', category: 'Tech' },
+        { name: 'iPhone 15 Pro Max', price: 1500, description: 'Dernier iPhone premium', category: 'Tech' },
+        { name: 'PS5 Premium', price: 500, description: 'Console PlayStation 5', category: 'Gaming' },
+        { name: 'Vélo électrique haut de gamme', price: 5000, description: 'Vélo électrique premium', category: 'Sport' },
+        { name: 'Week-end luxe à Paris', price: 5000, description: 'Hôtel 5 étoiles + activités', category: 'Voyage' },
+        { name: 'Montre Rolex', price: 15000, description: 'Montre de luxe suisse', category: 'Mode' },
+        { name: 'Croisière en Méditerranée', price: 50000, description: 'Croisière 2 semaines', category: 'Voyage' }
+      ];
+      return items.reduce(function(promise, item) {
+        return promise.then(function() {
+          return dbRun(
+            'INSERT INTO awareness_items (name, price, description, category) VALUES (?, ?, ?, ?)',
+            [item.name, item.price, item.description, item.category]
+          );
+        });
+      }, Promise.resolve());
+    }
+  });
 }
 
 function rowToUser(row) {
@@ -72,27 +108,34 @@ function rowToUser(row) {
   };
 }
 
-async function getUserById(id) {
-  const row = await dbGet('SELECT * FROM users WHERE id = ?', [id]);
-  return rowToUser(row);
+function getUserById(id) {
+  return dbGet('SELECT * FROM users WHERE id = ?', [id]).then(function(row) {
+    return rowToUser(row);
+  });
 }
 
-async function getUserByUsername(username) {
-  const row = await dbGet('SELECT * FROM users WHERE username = ?', [username]);
-  return rowToUser(row);
+function getUserByUsername(username) {
+  return dbGet('SELECT * FROM users WHERE username = ?', [username]).then(function(row) {
+    return rowToUser(row);
+  });
 }
 
-async function createUser({ username, password = null, balance = STARTING_BALANCE }) {
-  const id = uuidv4();
-  await dbRun(
+function createUser(params) {
+  var username = params.username;
+  var password = params.password;
+  var balance = params.balance !== undefined ? params.balance : STARTING_BALANCE;
+  var id = uuidv4();
+  
+  return dbRun(
     'INSERT INTO users (id, username, password, balance) VALUES (?, ?, ?, ?)',
     [id, username, password, balance]
-  );
-  return getUserById(id);
+  ).then(function() {
+    return getUserById(id);
+  });
 }
 
-async function setUserBalance(userId, balance) {
-  await dbRun('UPDATE users SET balance = ? WHERE id = ?', [balance, userId]);
+function setUserBalance(userId, balance) {
+  return dbRun('UPDATE users SET balance = ? WHERE id = ?', [balance, userId]);
 }
 
 // Dev safety: avoid stale frontend files across machines/browser sessions.
@@ -113,47 +156,63 @@ function generateToken(userId) {
   return jwt.sign({ sub: userId }, JWT_SECRET, { expiresIn: '7d' });
 }
 
-async function authMiddleware(req, res, next) {
-  const auth = req.headers.authorization;
+function authMiddleware(req, res, next) {
+  var auth = req.headers.authorization;
   if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'Missing token' });
-  const token = auth.slice(7);
+  var token = auth.slice(7);
   try {
-    const payload = jwt.verify(token, JWT_SECRET);
-    const user = await getUserById(payload.sub);
-    if (!user) return res.status(401).json({ error: 'Invalid token' });
-    req.user = user;
-    next();
+    var payload = jwt.verify(token, JWT_SECRET);
+    getUserById(payload.sub).then(function(user) {
+      if (!user) return res.status(401).json({ error: 'Invalid token' });
+      req.user = user;
+      next();
+    }).catch(function(err) {
+      return res.status(401).json({ error: 'Invalid token' });
+    });
   } catch (err) {
     return res.status(401).json({ error: 'Invalid token' });
   }
 }
 
 // Register
-app.post('/api/register', async (req, res) => {
+app.post('/api/register', function(req, res) {
   try {
-    const { username, password } = req.body;
+    var username = req.body.username;
+    var password = req.body.password;
     if (!username || !password) return res.status(400).json({ error: 'Champs requis' });
-    const existing = await getUserByUsername(username);
-    if (existing) return res.status(400).json({ error: 'Utilisateur déjà existant' });
-    const hash = await bcrypt.hash(password, 10);
-    const user = await createUser({ username, password: hash, balance: STARTING_BALANCE });
-    const token = generateToken(user._id);
-    res.json({ token, username: user.username, balance: user.balance });
+    
+    getUserByUsername(username).then(function(existing) {
+      if (existing) return res.status(400).json({ error: 'Utilisateur déjà existant' });
+      return bcrypt.hash(password, 10).then(function(hash) {
+        return createUser({ username: username, password: hash, balance: STARTING_BALANCE }).then(function(user) {
+          var token = generateToken(user._id);
+          res.json({ token: token, username: user.username, balance: user.balance });
+        });
+      });
+    }).catch(function(err) {
+      res.status(500).json({ error: 'database error' });
+    });
   } catch (err) {
     res.status(500).json({ error: 'database error' });
   }
 });
 
 // Login
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', function(req, res) {
   try {
-    const { username, password } = req.body;
-    const user = await getUserByUsername(username);
-    if (!user) return res.status(400).json({ error: 'Utilisateur inconnu' });
-    const valid = await bcrypt.compare(password, user.password);
-    if (!valid) return res.status(400).json({ error: 'Mot de passe incorrect' });
-    const token = generateToken(user._id);
-    res.json({ token, username: user.username, balance: user.balance });
+    var username = req.body.username;
+    var password = req.body.password;
+    
+    getUserByUsername(username).then(function(user) {
+      if (!user) return res.status(400).json({ error: 'Utilisateur inconnu' });
+      return bcrypt.compare(password, user.password).then(function(valid) {
+        if (!valid) return res.status(400).json({ error: 'Mot de passe incorrect' });
+        var token = generateToken(user._id);
+        res.json({ token: token, username: user.username, balance: user.balance });
+      });
+    }).catch(function(err) {
+      res.status(500).json({ error: 'database error' });
+    });
   } catch (err) {
     res.status(500).json({ error: 'database error' });
   }
@@ -184,6 +243,33 @@ app.post('/api/bonus/recovery', authMiddleware, (req, res) => {
   setUserBalance(req.user._id, nextBalance)
     .then(() => res.json({ granted: 100, balance: nextBalance }))
     .catch(() => res.status(500).json({ error: 'database error' }));
+});
+
+// Get awareness items based on loss amount
+app.post('/api/awareness/items', authMiddleware, function(req, res) {
+  try {
+    var lossAmount = (req.body || {}).lossAmount;
+    var loss = Number(lossAmount) || 0;
+    
+    if (loss <= 0) {
+      return res.status(400).json({ error: 'invalid loss amount' });
+    }
+
+    // Get items that player could afford with lost amount
+    db.all(
+      'SELECT * FROM awareness_items WHERE price <= ? ORDER BY price DESC LIMIT 5',
+      [loss],
+      function(err, rows) {
+        if (err) {
+          res.status(500).json({ error: 'database error' });
+        } else {
+          res.json({ items: rows || [], totalLoss: loss });
+        }
+      }
+    );
+  } catch (err) {
+    res.status(500).json({ error: 'database error' });
+  }
 });
 
 // Rouletter: bet on a number 0-36

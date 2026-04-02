@@ -70,6 +70,7 @@
       
       footer{margin-top:2rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.05);text-align:center;color:var(--muted);font-size:0.9rem}
     </style>
+    <script src="/awareness.js"></script>
   </head>
   <body>
     <div class="wrap">
@@ -94,7 +95,7 @@
           <div class="info-section" style="margin:0;min-width:220px;flex:0 0 auto">
             <div class="info-row">
               <span class="info-label">Solde</span>
-              <span class="info-value" id="balance">1000 🪙</span>
+              <span class="info-value" id="balance">100000 🪙</span>
             </div>
             <div class="info-row">
               <span class="info-label">Dernière Mise</span>
@@ -187,7 +188,7 @@
       };
 
       let game = {
-        balance: 1000,
+        balance: 100000,
         bet: 0,
         isSpinning: false,
         result: [null, null, null]
@@ -284,6 +285,7 @@
           title = '✨ Petit Gain';
         }
 
+        const lossAmount = game.bet - winnings;
         game.balance += winnings;
 
         document.getElementById('lastBet').textContent = game.bet + ' 🪙';
@@ -296,6 +298,13 @@
         document.getElementById('resultMessage').classList.add('show');
 
         syncBalance();
+
+        // Show awareness notification if player lost money
+        if (lossAmount > 0) {
+          setTimeout(() => {
+            showAwarenessNotification(lossAmount);
+          }, 500);
+        }
 
         if (game.balance <= 0) {
           setTimeout(() => {

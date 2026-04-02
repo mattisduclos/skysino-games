@@ -115,6 +115,7 @@
         .poker-table{padding:1rem}
       }
     </style>
+    <script src="/awareness.js"></script>
   </head>
   <body>
     <div class="wrap">
@@ -496,8 +497,12 @@
       }
 
       function endHand() {
+        const playerBefore = gameState.players[0].stack + gameState.players[0].bet;
         const winner = gameState.players.filter(p => !p.folded)[0];
         winner.stack += gameState.pot;
+        
+        const playerAfter = gameState.players[0].stack;
+        const lossAmount = playerBefore - playerAfter;
 
         gameState.gameInProgress = false;
         updateDisplay();
@@ -538,6 +543,13 @@
         });
 
         showResult('Tour Terminé!', `${winner.name} remporte ${gameState.pot} 🪙`, detailsEl.innerHTML);
+        
+        // Show awareness notification if player lost money
+        if (lossAmount > 0) {
+          setTimeout(() => {
+            showAwarenessNotification(lossAmount);
+          }, 1000);
+        }
       }
 
       function checkOrCall() {
